@@ -5,7 +5,13 @@ import App from './App'
 const notes = [
   {
     id: 0,
-    contents: 'lol'
+    content: 'juu',
+    important: true
+  },
+  {
+    id: 1,
+    content: 'jaa',
+    important: false
   }
 ]
 
