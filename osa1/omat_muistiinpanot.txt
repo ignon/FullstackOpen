@@ -1,0 +1,86 @@
+Kurssilla ei "var":ia!
+
+Reactin yhteydessä sovelletaan usein funktionaalisen ohjelmoinnin tekniikoita, jonka eräs piirre on käyttää muuttumattomia (engl. immutable) tietorakenteita. React-koodissa kannattaakin mieluummin käyttää metodia concat, joka ei lisää alkiota taulukkoon vaan luo uuden taulukon, jossa on lisättävä alkio sekä vanhan taulukon sisältö
+
+
+Emme kuitenkaan tarvitse tällä kurssilla ollenkaan itse määriteltyjä metodillisia olioita
+
+Määrittelemme tällä kurssilla kaikki funktiot nuolisyntaksin avulla.
+
+
+Javascriptissa this:n arvo määrittyy sen mukaan miten metodia on kutsuttu. Kutsuttaessa metodia viitteen kautta, this:in arvoksi tulee ns. globaali objekti ja lopputulos ei ole yleensä ollenkaan se, mitä sovelluskehittäjä olettaa.
+
+`setTimeout(arto.greet.bind(arto), 1000)` luo uuden funktion, missä se on sitonut this:in tarkoittamaan Artoa riippumatta siitä missä ja miten metodia kutsutaan.
+
+`this` doesn't work with arrow syntax
+
+Understandin THIS:
+https://egghead.io/courses/understand-javascript-s-this-keyword-in-depth
+
+Javascriptissä ei perimmiltään ole muita tyyppejä kuin Boolean, Null, Undefined, Number, String, Symbol, BigInt ja Object
+
+const func = ({name, age}) => {
+	
+}
+
+const {age, name} = props;
+
+
+import React, { useState } from 'react'
+const [ counter, setCounter ] = useState(0)
+^ Alkiot otetaan taulukon destrukturointisyntaksilla talteen muuttujiin counter ja setCounter.
+
+(If we wanted to store two different values in state, we would call useState() twice.)
+
+
+Often, several components need to reflect the same changing data. We recommend lifting the shared state up to their closest common ancestor.
+
+Reactissa ei kuitenkaan ole sallittua muuttaa tilaa suoraan, sillä voi olla arvaamattomat seuraukset.
+
+
+Why using multiple states vs. state-object is better:
+https://reactjs.org/docs/hooks-faq.html#should-i-use-one-or-many-state-variables
+
+
+https://reactjs.org/docs/hooks-rules.html
+https://www.npmjs.com/package/eslint-plugin-react-hooks
+
+useEffect()
+
+  const hello = (who) => {
+    const handler = () => console.log('hello ', who)
+    return handler
+  }
+  TAI
+  const hello = (who) =>
+    console.log('hello ', who)
+  
+  onClick={hello(''arde)}
+  ==
+  onClick={() => console.log('hello arde') }
+  
+  
+   const setToValue = (newValue) => () => {
+    setValue(newValue)
+  }
+  ==
+  () => setValue(11)
+  
+  
+ÄLÄ MÄÄRITTELE KOMPONENTTIA KOMPONENTIN SISÄLLÄ
+	komponentin sisällä määritelty komponentti on Reactin näkökulmasta jokaisen renderöinnin yhteydeyssä aina uusi komponentti. Tämä tekee komponentin optimoinnista Reactille mahdotonta.
+	
+dogs = t.filter(isDog)
+otherAnimals = t.reject(isDog)
+animalNames = t.map((x) => x.name)
+find
+FindAll
+
+let sum = [1,2,3].reduce((sum, val) => sum + val, 0  )
+
+Read [-]
+https://reactjs.org/docs/reconciliation.html#recursing-on-children
+
+
+Lähtökohtaisesti toki kannattaa olla kokonaan kopioimatta tai laittamatta versionhallintaan hakemistoa node_modules
+
