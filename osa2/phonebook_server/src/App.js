@@ -1,9 +1,21 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+
 
 const App = () => {
   const [ persons, setPersons] = useState([
-    { name: 'Arto Hellas', number:'12-34-56789'}
-  ]) 
+    //{ name: 'Arto Hellas', number:'12-34-56789'}
+  ])
+
+  const hook = () => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then((response) => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }
+  useEffect(hook, [])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filter, setFilter ] = useState('')
