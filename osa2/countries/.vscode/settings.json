@@ -1,0 +1,5 @@
+{
+    "jshint.options": {
+        "asi": true
+    }
+}

@@ -28,7 +28,7 @@ const App = (props) => {
       const query = 'Helsinki'
       const access_key = WEATHER_API_KEY
       const weather_api_url =
-      `http://api.weatherstack.com/current?access_key=${WEATHER_API_KEY}&query=${query}`
+        `http://api.weatherstack.com/current?access_key=${WEATHER_API_KEY}&query=${query}`
       axios.get(weather_api_url, null, { params: {
         access_key,
         query
