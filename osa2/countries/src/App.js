@@ -4,88 +4,124 @@ import axios from 'axios'
 
 const App = (props) => {
 
-  const [ filter, setFilter ] = useState('')
+  // Using country JSON map as a hook didn't feel wise because it had nested data structures (same with filteredCountries)
   const [ countryName,    setCountryName ] = useState('')
+  const [ weatherData, setWeatherData] = useState({})
   const [ countries, setCountries] = useState([])
+  const [ filter, setFilter ] = useState('')
+
 
   const {WEATHER_API_KEY} = props
-  console.log(WEATHER_API_KEY)
+  console.log('WEATHER_API_KEY', WEATHER_API_KEY)
 
+  const filteredCountries =
+    countries.filter(country => {
+      const regexp = new RegExp('^'+filter, 'i')
+      return (regexp.test(country.name))
+    })
 
-  const hook = () => {
-    axios
-      .get('https://restcountries.eu/rest/v2/all')
-      .then((response) => {
-        console.log(response.data)
-        
-        console.log('promise fulfilled')
-        setCountries(response.data)
-      })
-  }
-  useEffect(hook, [])
-
-  const weather_hook = () => {
-      const query = 'Helsinki'
-      const access_key = WEATHER_API_KEY
-      const weather_api_url =
-        `http://api.weatherstack.com/current?access_key=${WEATHER_API_KEY}&query=${query}`
-      axios.get(weather_api_url, null, { params: {
-        access_key,
-        query
-      }})
-      .then(response => {
-        console.log(response.data)
-      })
+  if (filteredCountries.length === 1)
+  {
+    const country = filteredCountries[0];
+    const name = country.name
+    
+    if (name !== countryName) {
+      setCountryName(name)
+      setWeatherData(undefined)
     }
 
-  useEffect(weather_hook, [WEATHER_API_KEY, countryName])
-  
+    console.log(countryName)
+  }
+
+  const country = countries.find(country =>
+    country.name === countryName
+  )
+
+  const restCountriesHook = () => {
+    axios
+      .get('https://restcountries.eu/rest/v2/all')
+      .then(response =>
+        setCountries(response.data)
+      )
+  }
+  useEffect(restCountriesHook, [])
+
+
+  const weatherHook = () => {
+    console.log('WEATHER HOOK')
+
+    if (!country || !country.name) return;
+
+    const query = country.capital
+    const access_key = WEATHER_API_KEY
+    const weather_api_url =
+      `http://api.weatherstack.com/current?access_key=${WEATHER_API_KEY}&query=${query}`
+    axios.get(weather_api_url, null, { params: {
+      access_key,
+      query
+    }})
+    .then(response => {
+      const newWeatherData = response.data
+      console.log(newWeatherData.current)
+      setWeatherData(response.data)
+    })
+  }
+  useEffect(weatherHook, [WEATHER_API_KEY, country])
 
 
   const handleNewFilter = (event) => {
     const newFilter = event.target.value
+    console.log('setFilter', newFilter)
     setFilter(newFilter)
   }
-
-  const handleNewCountryName = (countryName) => {
-    console.log(countryName)
-    setCountryName(countryName)
-  }
-
+  
   return (
     <div>
       <Filter
         filter={filter}
         handleNewFilter={handleNewFilter}
-        setFilter={setFilter}
       />
       <Countries
-        countries={countries}
-        filter={filter}
-        handleNewCountryName={handleNewCountryName}
+        filteredCountries={filteredCountries}
+        setFilter={setFilter}
+        weatherData={weatherData}
       />
     </div>
   )
+}
 
+const Weather = ({weatherData}) => {
+  
+  if (!weatherData || !weatherData.current || !weatherData.location)
+    return (
+      <div></div>
+    );
+
+  const weather = weatherData.current
+  const city = weatherData.location.name
+  
+  return (
+    <div>
+      <h3>Weather in {city}</h3>
+      <p><b>Temperature:</b> {weather.temperature} Celcius</p>
+      <p><b>Wind:</b> {weather.temperature} mph direction {weather.wind_dir}</p>
+    </div>
+  )
 }
 
 
 const Filter = ({filter, handleNewFilter}) => (
   <div>
-    <p>filter shown with</p> <input
+    <p>Find countries:</p>
+    <input
       value={filter}
       onChange={handleNewFilter}
     />
   </div>
 )
 
-const Countries = ({countries, filter, handleNewCountryName}) => {
-  const filteredCountries =
-    countries.filter(country => {
-      const regexp = new RegExp('^'+filter, 'i')
-      return (regexp.test(country.name))
-    })
-  
+const Countries = ({filteredCountries, setCountryName, setFilter, weatherData}) => {
+
   const maxCountriesToShow = 10
   if (filteredCountries.length >= maxCountriesToShow)
     return (
@@ -96,8 +132,7 @@ const Countries = ({countries, filter, handleNewCountryName}) => {
   if (filteredCountries.length === 1) {
 
     const selectedCountry = filteredCountries[0]
-    const {name, flag, languages, capital, population} = selectedCountry;
-    handleNewCountryName(name)
+    const {name, flag, languages, capital, population} = selectedCountry
     console.log(flag);
     
     return (
@@ -112,19 +147,22 @@ const Countries = ({countries, filter, handleNewCountryName}) => {
             <li key={lang.iso639_2}> {lang.name}</li>
           )}
         </ul>
+
+        <Weather
+          weatherData={weatherData}
+        />
       </div>
     )
   }
 
-  
   return (
     <div>
       <ul>
         {filteredCountries
           .map(country =>
             <li key={country.alpha3Code}>
-              {country.name + ' '} 
-                <button onClick={() => handleNewCountryName({...country})}>show</button>
+              {country.name + ' '}
+                <button onClick={() => setFilter(country.name)}>show</button>
             </li>
           )
         }
@@ -134,73 +172,4 @@ const Countries = ({countries, filter, handleNewCountryName}) => {
 }
 
 
-
 export default App
-
-
-
-/*
-
-import React, { useState } from 'react'
-
-const App = (props) => {
-  const [notes, setNotes] = useState(props.notes)
-  const [newNote, setNewNote] = useState('')
-  const [showAll, setShowAll] = useState(true);
-
-  const notesToShow = showAll
-    ? notes
-    : notes.filter(note => note.important)
-
-  
-
-  const addNote = (event) => {
-      event.preventDefault()
-      console.log('button clicked', event.target)
-      
-      const noteObj = {
-        content: newNote,
-        date: new Date().toISOString(),
-        important: Math.random > 0.5,
-        id: notes.length
-      }
-
-      setNotes(
-        notes.concat(noteObj)
-      )
-      setNewNote('')
-  }
-
-  const handleNoteChange = (event) => {
-    console.log(event.target.value);
-    setNewNote(event.target.value)
-  }
-
-  return (
-    <div>
-      <h1>Notes</h1>
-      <div>
-        <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all'}
-        </button>
-      </div>
-      <ul>
-        {notesToShow.map(note => 
-          <Note key={note.id} note={note} />
-        )}
-      </ul>
-
-      <form onSubmit={addNote}>
-          <input value={newNote} onChange={handleNoteChange}/>
-          <button type="submit">Save</button>
-      </form>
-    </div>
-  )
-}
-
-const Note = ({note}) => (
-  <li>{note.content}</li>
-)
-
-export default App 
-*/
