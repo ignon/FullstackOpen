@@ -1,0 +1,23 @@
+ @startuml harj1
+
+!define DARKRED
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+
+browser -> server: HTTP GET /exampleapp/spa
+browser <- server: HTML code (200)
+
+browser -> server: HTTP GET /exampleapp/main.css
+browser <- server: main.css (200)
+
+browser -> server: HTTP GET /exampleapp/spa.js
+browser <- server: spa.js (200)
+
+browser -> server: HTTP GET /exampleapp/data.json
+browser <- server: data.json (200)
+
+browser -> server: HTTP GET /favicon.ico
+browser <- server: favicon.ico (200)
+
+@enduml
+

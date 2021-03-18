@@ -5,15 +5,27 @@
 
 
 browser -> server: HTTP POST /exampleapp/new_note
-browser <- server: HTML redirect (302)
+browser <- server: HTTP redirect (302)
 
 browser -> server: HTTP GET /exampleapp/notes
-browser <- server: HTTP source (200)
+browser <- server: HTML code (200)
 
+browser -> server: HTTP GET /exampleapp/main.css
+browser <- server: main.css (200)
 
+browser -> server: HTTP GET /exampleapp/main.js
+browser <- server: main.js (200)
 
+browser -> server: HTTP GET /exampleapp/data.json
+browser <- server: data.json (200)
+
+browser -> server: HTTP GET /favicon.ico
+browser <- server: favicon.ico (200)
 
 @enduml
+
+
+
 
 
 /'
