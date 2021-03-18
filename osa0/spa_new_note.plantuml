@@ -1,8 +1,4 @@
- @startuml harj1
-
-!define DARKRED
-!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
-
+ @startuml Single Page Application New Note
 
 browser -> server: HTTP POST /exampleapp/new_note_spa
 browser <- server: JSON: {message: "note created"} (201)

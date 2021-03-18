@@ -1,8 +1,4 @@
- @startuml harj1
-
-!define DARKRED
-!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
-
+ @startuml Single Page application
 
 browser -> server: HTTP GET /exampleapp/spa
 browser <- server: HTML code (200)
