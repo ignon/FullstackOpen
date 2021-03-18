@@ -1,0 +1,89 @@
+ @startuml harj1
+
+!define DARKRED
+!includeurl https://raw.githubusercontent.com/Drakemor/RedDress-PlantUML/master/style.puml
+
+
+browser -> server: HTTP POST /exampleapp/new_note
+browser <- server: HTML redirect (302)
+
+browser -> server: HTTP GET /exampleapp/notes
+browser <- server: HTTP source (200)
+
+
+
+
+@enduml
+
+
+/'
+hide footbox
+
+actor Asiakas as user
+
+boundary Kortinlukija as front
+
+
+ control Tunnistautumisohjain as auth
+control Katalogiohjain as catalog
+
+entity Asiakastiedot as account
+entity Katalogitiedot as db_catalog
+
+
+
+user -> front: Skannaa kirjastokortin \n viivakoodin ja syöttää \n salasanan/pin-koodin
+
+activate front
+    front -> auth: Kirjautumispyyntö
+
+    activate auth
+        auth -> account: Pyytää kirjastokortin viivakoodia vastaavan \n salasanan hashin
+        activate account
+        return: Palauttaa hashin
+        note over auth: Testaa hashien vastaavuuden \n (oliko salasana oikein)
+
+        
+        auth -> account: Varmistaa onko käyttäjällä lainausoikeus \n (kortti ei jäissä maksujen takia)
+        
+        activate account
+        return: Palauttaa oikeustiedot
+        
+        
+    return Kirjautuminen \n Onnistui/Epäonnistui
+    
+    front -> user: Ilmoittaa onnistuiko \n kirjautuminen ja \n pyytää skannaamaan \n kirjojen viivakoodit.
+
+
+    user -> front: Skannaa kirjojen \n viivakoodit
+    front -> catalog: Lainaa teos
+
+    activate catalog
+    catalog -> db_catalog: Lataa teoksen viimeisimmän lainauksen
+
+    activate db_catalog
+    return Viimeisin lainaus
+
+    note over catalog: Tarkistaa että teos ei ole \n tietokannan mukaan lainassa \n (eli se on tietokannan mukaan \n palautettu viimelainaamisen jälkeen) \n --- \n Antaa lainata molemmissa \n tapauksissa, mutta ilmoittaa \n henkilökunnalle
+
+
+    catalog -> account: Tallenna lainaus \n käyttäjätietoihin
+    activate account
+    return Onnistui/epäonnistui
+
+
+    catalog -> db_catalog: Tallenna lainaus \n katalogiin (teokseen sekä julkaisuun)
+    activate db_catalog
+    return Onnistui/epäonnistui
+
+    return Onnistui/epäonnistui \n + kuitin sisältö + mahdollinen virheilmoitus
+
+return Tulostaa kuitin \n tai näyttää virheilmoituksen.
+'/
+
+
+
+
+
+
+
