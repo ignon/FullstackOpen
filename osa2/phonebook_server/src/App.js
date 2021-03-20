@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from 'react'
-import personService from './services/persons'
+import axios from 'axios'
 
 
 const App = () => {
-  const [ persons, setPersons] = useState([])
+  const [ persons, setPersons] = useState([
+    //{ name: 'Arto Hellas', number:'12-34-56789'}
+  ])
 
   const hook = () => {
-    personService
-      .getAll()
-      .then((persons) => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then((response) => {
         console.log('promise fulfilled')
-        setPersons(persons)
+        setPersons(response.data)
       })
   }
   useEffect(hook, [])
@@ -24,6 +26,11 @@ const App = () => {
 
     if (newName.length <= 0) {
       alert('"Name" field is required!')
+      return;
+    }
+    
+    if (persons.find(p => p.name === newName)) {
+      alert(`"${newName}" is already added to phonebook!`)
       return;
     }
 
@@ -43,47 +50,12 @@ const App = () => {
       number: newNumber
     }
 
-    const duplicate = persons.find(p => p.name === newPerson.name)
-    if (duplicate) {
-      if (window.confirm(`${newPerson.name} already exists, replace the old number with a new one?`)) {
-        personService
-          .update(duplicate.id, newPerson)
-          .then(returnedPerson => {
-            console.log(returnedPerson)
-            setPersons(
-              persons.map(person => (person.id !== returnedPerson.id)
-                ? person : returnedPerson
-              )
-            )
-          })
-      }
-    }
-    else {
-      personService
-        .add(newPerson)
-        .then(returnedPerson => {
-          console.log(returnedPerson)
-          setPersons(persons.concat(returnedPerson))
-          setNewName('')
-          setNewNumber('')
-        })
-    }
+    setPersons(
+      persons.concat(newPerson)
+    )
+    setNewName('')
+    setNewNumber('')
   }
-
-  const removePerson = (person) => {
-    if (window.confirm(`Delete ${person.name}?`)) {
-      personService
-        .remove(person.id)
-        .then(returnedPerson => {
-          setPersons(
-            persons.filter(p => p.id !== person.id)
-          )
-          console.log(returnedPerson)
-        })
-    }
-  }
-
-  
 
 
   const handleNewFilter = (event) => {
@@ -124,8 +96,8 @@ const App = () => {
       <Numbers
         persons={persons}
         filter={filter}
-        removePerson={removePerson}
       />
+      {/*<div>newName: {newName}</div>*/}
     </div>
   )
 
@@ -141,6 +113,7 @@ const Filter = ({filter, handleNewFilter}) => (
   </div>
 )
 
+/* Omaan päähän ois tuntunut paljon fiksummalta siirtää name ja number -hookit tän sisään, mutta tien nyt ohjeen mukaan*/
 const PersonForm = ({addPerson, newName, handleNewName, newNumber, handleNewNumber}) => (
   
   <form onSubmit={addPerson}>
@@ -161,7 +134,7 @@ const PersonForm = ({addPerson, newName, handleNewName, newNumber, handleNewNumb
   </form>
 )
 
-const Numbers = ({persons, filter, removePerson}) => (
+const Numbers = ({persons, filter}) => (
   <div>
     <ul>
       {persons
@@ -170,10 +143,78 @@ const Numbers = ({persons, filter, removePerson}) => (
           return (regexp.test(p.name))
         })
         .map(
-          p => <li key={p.name}>{p.name} {p.number}<button onClick={() => removePerson(p)}>Delete</button></li>
+          p => <li key={p.name}>{p.name} {p.number}</li>
         )
       }
     </ul>
   </div>
 )
 export default App
+
+
+
+/*
+
+import React, { useState } from 'react'
+
+const App = (props) => {
+  const [notes, setNotes] = useState(props.notes)
+  const [newNote, setNewNote] = useState('')
+  const [showAll, setShowAll] = useState(true);
+
+  const notesToShow = showAll
+    ? notes
+    : notes.filter(note => note.important)
+
+  
+
+  const addNote = (event) => {
+      event.preventDefault()
+      console.log('button clicked', event.target)
+      
+      const noteObj = {
+        content: newNote,
+        date: new Date().toISOString(),
+        important: Math.random > 0.5,
+        id: notes.length
+      }
+
+      setNotes(
+        notes.concat(noteObj)
+      )
+      setNewNote('')
+  }
+
+  const handleNoteChange = (event) => {
+    console.log(event.target.value);
+    setNewNote(event.target.value)
+  }
+
+  return (
+    <div>
+      <h1>Notes</h1>
+      <div>
+        <button onClick={() => setShowAll(!showAll)}>
+          show {showAll ? 'important' : 'all'}
+        </button>
+      </div>
+      <ul>
+        {notesToShow.map(note => 
+          <Note key={note.id} note={note} />
+        )}
+      </ul>
+
+      <form onSubmit={addNote}>
+          <input value={newNote} onChange={handleNoteChange}/>
+          <button type="submit">Save</button>
+      </form>
+    </div>
+  )
+}
+
+const Note = ({note}) => (
+  <li>{note.content}</li>
+)
+
+export default App 
+*/
