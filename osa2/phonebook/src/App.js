@@ -1,9 +1,21 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+
 
 const App = () => {
   const [ persons, setPersons] = useState([
-    { name: 'Arto Hellas', number:'12-34-56789'}
-  ]) 
+    //{ name: 'Arto Hellas', number:'12-34-56789'}
+  ])
+
+  const hook = () => {
+    axios
+      .get('http://localhost:3001/persons')
+      .then((response) => {
+        console.log('promise fulfilled')
+        setPersons(response.data)
+      })
+  }
+  useEffect(hook, [])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ filter, setFilter ] = useState('')
@@ -138,71 +150,3 @@ const Numbers = ({persons, filter}) => (
   </div>
 )
 export default App
-
-
-
-/*
-
-import React, { useState } from 'react'
-
-const App = (props) => {
-  const [notes, setNotes] = useState(props.notes)
-  const [newNote, setNewNote] = useState('')
-  const [showAll, setShowAll] = useState(true);
-
-  const notesToShow = showAll
-    ? notes
-    : notes.filter(note => note.important)
-
-  
-
-  const addNote = (event) => {
-      event.preventDefault()
-      console.log('button clicked', event.target)
-      
-      const noteObj = {
-        content: newNote,
-        date: new Date().toISOString(),
-        important: Math.random > 0.5,
-        id: notes.length
-      }
-
-      setNotes(
-        notes.concat(noteObj)
-      )
-      setNewNote('')
-  }
-
-  const handleNoteChange = (event) => {
-    console.log(event.target.value);
-    setNewNote(event.target.value)
-  }
-
-  return (
-    <div>
-      <h1>Notes</h1>
-      <div>
-        <button onClick={() => setShowAll(!showAll)}>
-          show {showAll ? 'important' : 'all'}
-        </button>
-      </div>
-      <ul>
-        {notesToShow.map(note => 
-          <Note key={note.id} note={note} />
-        )}
-      </ul>
-
-      <form onSubmit={addNote}>
-          <input value={newNote} onChange={handleNoteChange}/>
-          <button type="submit">Save</button>
-      </form>
-    </div>
-  )
-}
-
-const Note = ({note}) => (
-  <li>{note.content}</li>
-)
-
-export default App 
-*/
