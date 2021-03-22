@@ -43,7 +43,7 @@ const App = () => {
       name: newName,
       number: newNumber
     }
-
+    console.log('jaaa')
     const duplicate = persons.find(p => p.name === newPerson.name)
     
     if (duplicate) {
@@ -60,6 +60,10 @@ const App = () => {
             )
           )
         })
+        .catch(err => {
+          const error = err.response.data.error
+          showNotification(`Error: ${error}`, true)
+        })
     }
     else {
       personService
@@ -69,6 +73,10 @@ const App = () => {
           setPersons(persons.concat(returnedPerson))
           setNewName('')
           setNewNumber('')
+        })
+        .catch(err => {
+          const error = err.response.data.error
+          showNotification(`Error: ${error}`, true)
         })
     }
   }
