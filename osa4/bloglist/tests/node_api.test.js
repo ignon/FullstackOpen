@@ -54,7 +54,7 @@ test('blog can be added', async () => {
   await api
     .post('/api/blogs')
     .send(blogToAdd)
-    .expect(201)
+    .expect(200)
     .expect('Content-Type', /application\/json/)
 
   const blogsAtEnd = await helper.getBlogsInDatabase()
@@ -121,7 +121,7 @@ test('undefined like field defaults to 0', async () => {
   await api
     .post('/api/blogs')
     .send(newBlog)
-    .expect(201)
+    .expect(200)
     .expect('Content-Type', /application\/json/)
 
   const blogsAtEnd = await helper.getBlogsInDatabase()

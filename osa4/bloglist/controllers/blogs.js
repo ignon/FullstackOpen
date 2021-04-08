@@ -1,4 +1,4 @@
-const { request } = require('../app')
+const User = require('../models/user')
 const Blog = require('../models/blog')
 const blogRouter = require('express').Router()
 // app.js:n import 'express-async-errors' handles try catches for us
@@ -9,10 +9,23 @@ blogRouter.get('/', async (request, response) => {
 })
 
 blogRouter.post('/', async (request, response) => {
-  const newBlog = new Blog(request.body)
-  const savedBlog = await newBlog.save()
+  const body = request.body
 
-  response.status(201).json(savedBlog.toJSON())
+  const user = await User.findById(body.userId)
+
+  const newBlog = new Blog({
+    title: body.title,
+    author: body.author,
+    url: body.url,
+    likes: body.likes,
+    user: user._id
+  })
+
+  const savedBlog = await newBlog.save()
+  user.notes = user.notes.concat(savedBlog._id)
+  await user.save()
+
+  response.json(savedBlog.toJSON())
 })
 
 blogRouter.get('/:id', async (request, response) => {
