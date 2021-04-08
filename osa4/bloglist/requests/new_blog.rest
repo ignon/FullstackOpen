@@ -2,8 +2,9 @@ POST http://localhost:3001/api/blogs/
 Content-Type: application/json
 
 {
-  "title": "Kakkaa lumella",
-  "author": "",
+  "title": "Kakkaa lumeeella",
+  "author": "sdafdsadsafdsadsfdsa",
   "likes": 666,
-  "url": "https://sieni.us"
+  "url": "https://sieni.us",
+  "userId": "606eefc9e678403b06219dfc"
 }

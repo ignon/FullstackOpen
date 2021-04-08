@@ -4,7 +4,9 @@ const blogRouter = require('express').Router()
 // app.js:n import 'express-async-errors' handles try catches for us
 
 blogRouter.get('/', async (request, response) => {
-  const blogs = await Blog.find({})
+  const blogs = await Blog
+    .find({})
+    .populate('user', { username: 1, name: 1 })
   response.json(blogs.map(blog => blog.toJSON()))
 })
 
@@ -22,7 +24,7 @@ blogRouter.post('/', async (request, response) => {
   })
 
   const savedBlog = await newBlog.save()
-  user.notes = user.notes.concat(savedBlog._id)
+  user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
 
   response.json(savedBlog.toJSON())
