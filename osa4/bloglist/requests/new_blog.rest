@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
   "title": "Kakkaa lumella",
-  "author": "Arttu Mäkinen",
+  "author": "",
   "likes": 666,
   "url": "https://sieni.us"
 }

@@ -1,4 +1,6 @@
-const oneBlog = [
+const testBlogs = {}
+
+testBlogs.oneBlog = [
   {
     _id: '5a422aa71b54a676234d17f8',
     title: 'Go To Statement Considered Harmful',
@@ -10,7 +12,33 @@ const oneBlog = [
 ]
 
 
-const threeBlogs = [
+testBlogs.threeBlogs = [
+  {
+    id: '5a422aa71b54a676234d17f8',
+    title: 'Go To Statement Considered Harmful',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+    likes: 5
+  },
+  {
+    id: '3124jh321h4kl432j1h432',
+    title: 'Viikingit söivät kärpässieniä saavuttaakseen raivoisan taistelutahdon',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://sieni.us/',
+    likes: 2
+  },
+  {
+    id: 'kj342l1a52345hj3k2l1321',
+    title: 'Based Cooking',
+    author: 'Luke Smith',
+    url: 'https://based.cooking/',
+    likes: 3
+  }
+]
+
+testBlogs.threeBlogsButInReverse = [...testBlogs.threeBlogs].reverse()
+
+testBlogs.someLikeFieldsMissing = [
   {
     _id: '5a422aa71b54a676234d17f8',
     title: 'Go To Statement Considered Harmful',
@@ -24,7 +52,6 @@ const threeBlogs = [
     title: 'Viikingit söivät kärpässieniä saavuttaakseen raivoisan taistelutahdon',
     author: 'Edsger W. Dijkstra',
     url: 'http://sieni.us/',
-    likes: 2,
     __v: 0
   },
   {
@@ -37,35 +64,7 @@ const threeBlogs = [
   }
 ]
 
-const threeBlogsButInReverse = [...threeBlogs].reverse()
-
-const someLikeFieldsMissing = [
-  {
-    _id: '5a422aa71b54a676234d17f8',
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-    likes: 5,
-    __v: 0
-  },
-  {
-    _id: '4jk1h23jkl4132h4k3jlh2jkl3',
-    title: 'Viikingit söivät kärpässieniä saavuttaakseen raivoisan taistelutahdon',
-    author: 'Edsger W. Dijkstra',
-    url: 'http://sieni.us/',
-    __v: 0
-  },
-  {
-    _id: '5jk2l34h1jklh234jkl321jh423',
-    title: 'Based Cooking',
-    author: 'Luke Smith',
-    url: 'https://based.cooking/',
-    likes: 3,
-    __v: 0
-  }
-]
-
-const invalidLikeFieldType = [
+testBlogs.invalidLikeFieldType = [
   {
     _id: '5a422aa71b54a676234d17f8',
     title: 'Go To Statement Considered Harmful',
@@ -84,7 +83,7 @@ const invalidLikeFieldType = [
   }
 ]
 
-const nullBlogs = [
+testBlogs.nullBlogs = [
   null,
   {
     _id: '4jk1h23jkl4132h4k3jlh2jkl3',
@@ -97,7 +96,7 @@ const nullBlogs = [
   null
 ]
 
-const likeFieldsMissing = [
+testBlogs.likeFieldsMissing = [
   {
     _id: '5a422a851b54a676234d17f7',
     title: 'React patterns',
@@ -115,7 +114,7 @@ const likeFieldsMissing = [
   }
 ]
 
-const noLikeFields = [
+testBlogs.noLikeFields = [
   {
     _id: '5a422a851b54a676234d17f7',
     title: 'React patterns',
@@ -132,7 +131,7 @@ const noLikeFields = [
   }
 ]
 
-const blogsWithTwoFavorites = [
+testBlogs.blogsWithTwoFavorites = [
   {
     _id: '5a422a851b54a676234d17f7',
     title: 'React Patterns',
@@ -151,14 +150,4 @@ const blogsWithTwoFavorites = [
   }
 ]
 
-module.exports = {
-  oneBlog,
-  threeBlogs,
-  someLikeFieldsMissing,
-  invalidLikeFieldType,
-  nullBlogs,
-  likeFieldsMissing,
-  noLikeFields,
-  threeBlogsButInReverse,
-  blogsWithTwoFavorites
-}
+module.exports = testBlogs
