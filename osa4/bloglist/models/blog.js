@@ -2,6 +2,7 @@ require('dotenv').config()
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
 
+
 const blogSchema = mongoose.Schema({
   title: {
     type: String,

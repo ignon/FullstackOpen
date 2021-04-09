@@ -205,7 +205,7 @@ test('modifying blog', async () => {
 
 test('modifying unexisting blog blog', async () => {
   const blogsAtStart = await helper.getBlogsInDatabase()
-  const blogToModify = {...blogsAtStart[0]}
+  const blogToModify = { ...blogsAtStart[0] }
   blogToModify.id = 'unexisting_id_j43kjh4j3241jkl6h34g7f45677'
 
   await api

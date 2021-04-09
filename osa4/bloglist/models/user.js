@@ -8,8 +8,16 @@ const userSchema = mongoose.Schema({
     required: true,
     unique: true
   },
-  name: String,
-  passwordHash: String,
+  name: {
+    type: String,
+    minlength: 3,
+    required: true
+  },
+  passwordHash: {
+    type: String,
+    minlength: 5,
+    required: true
+  },
   blogs: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Blog'
