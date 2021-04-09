@@ -14,8 +14,11 @@ describe('when there is initially one user at db', () => {
     await User.deleteMany({})
 
     const passwordHash = await bcrypt.hash('sekret', 10)
-    const user = new User({ username: 'root', passwordHash })
-
+    const user = new User({
+      name: 'root user',
+      username: 'root',
+      passwordHash
+    })
     await user.save()
   })
 
@@ -29,26 +32,22 @@ describe('when there is initially one user at db', () => {
       password: 'salasana'
     }
 
-    console.log('Stage 1')
-
-    const result = await api
+    await api
       .post('/api/users')
-      .send({ name: 'moih' })
-      //.expect(200)
-      //.expect('Content-Type', /application\/json/)
-
-    console.log('Stage 2', result)
+      .send(newUser)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
 
     const usersAtEnd = await helper.getUsersInDatabase()
     expect(usersAtEnd).toHaveLength(usersAtStart.length + 1)
 
-    console.log('Stage 3')
-
-    const usernames = usersAtEnd.map(u => u.name)
-    expect(usernames).toContain(newUser.name)
+    const names = usersAtEnd.map(u => u.name)
+    expect(names).toContain(newUser.name)
   })
 
   test('creating user when username missing', async () => {
+    const usersAtStart = await helper.getUsersInDatabase()
+
     await api
       .post('/api/users/')
       .send({
@@ -56,30 +55,33 @@ describe('when there is initially one user at db', () => {
         name: 'namejkjök',
         password: 'passworjhkljkld'
       })
-      .expect(401)
+      .expect(400)
       .expect('Content-Type', /application\/json/)
+
+    const usersAtEnd = await helper.getUsersInDatabase()
+    expect(usersAtStart).toHaveLength(usersAtEnd.length)
   })
 
-//   test('creating fails if username already taken', async () => {
-//     const usersAtStart = await helper.getUsersInDatabase()
+  test('creating fails if username already taken', async () => {
+    const usersAtStart = await helper.getUsersInDatabase()
 
-//     const newUser = {
-//       username: 'root',
-//       name: 'root user',
-//       password: 'foobar'
-//     }
+    const newUser = {
+      username: 'root',
+      name: 'root user',
+      password: 'foobar'
+    }
 
-//     const result = await api
-//       .post('/api/users')
-//       .send(newUser)
-//       .expect(400)
-//       .expect('Content-Type', /application\/json/)
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
 
-//     expect(result.body.error).toContain('`username` to be unique')
+    expect(result.body.error).toContain('`username` to be unique')
 
-//     const usersAtEnd = await helper.getUsersInDatabase()
-//     expect(usersAtEnd).toHaveLength(usersAtStart.length)
-//   })
+    const usersAtEnd = await helper.getUsersInDatabase()
+    expect(usersAtEnd).toHaveLength(usersAtStart.length)
+  })
 })
 
 
