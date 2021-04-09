@@ -15,7 +15,7 @@ const userSchema = mongoose.Schema({
   },
   passwordHash: {
     type: String,
-    minlength: 5,
+    minlength: 30,
     required: true
   },
   blogs: [{
@@ -36,5 +36,4 @@ userSchema.set('toJSON', {
 })
 
 const User = mongoose.model('User', userSchema)
-
 module.exports = User

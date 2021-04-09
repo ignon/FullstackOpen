@@ -1,3 +1,4 @@
+const jwt = require('jsonwebtoken')
 const logger = require('./logger')
 const morgan = require('morgan')
 morgan.token('res_body', function (req, res) { return JSON.stringify(req.body) })
@@ -38,4 +39,21 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
-module.exports = { requestLogger, errorHandler, unknownEndpoint }
+const tokenExtractor = (request, response, next) => {
+  const auth = request.get('authorization')
+  if (auth && auth.toLowerCase().startsWith('bearer')) {
+    const token = auth.substring(7)
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+
+    request.userId = decodedToken.id
+  }
+
+  next()
+}
+
+module.exports = {
+  requestLogger,
+  errorHandler,
+  unknownEndpoint,
+  tokenExtractor
+}

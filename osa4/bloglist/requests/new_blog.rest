@@ -1,9 +1,9 @@
 POST http://localhost:3001/api/blogs/
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImplcHBlIiwiaWQiOiI2MDZmMWVkN2VhZDU3OTU1Y2UwYzUzNWQiLCJpYXQiOjE2MTc4OTUxNTgsImV4cCI6MTYxNzg5ODc1OH0.c6yufmIV8D-dXpJD3_NBLih4NaH7YqFsXjTv_PDzYOw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFyZCIsImlkIjoiNjA3MDc3N2QzMGRlOWY2YzJlOTIwY2Q4IiwiaWF0IjoxNjE3OTgzNTIzLCJleHAiOjE2MTc5ODcxMjN9.wYOt4U4tFy7c80E-9rrhnTudogmGjHEQ3U4JWa2Z0BM
 
 {
-  "title": "Kakkaa lumella3",
+  "title": "aKakkaa lumell31dss3233sa43d23",
   "author": "sdafdsadsafdsadsfdsa",
   "likes": 666,
   "url": "https://sieni.us"

@@ -2,15 +2,17 @@ const User = require('../models/user')
 const Blog = require('../models/blog')
 const blogRouter = require('express').Router()
 // app.js:n import 'express-async-errors' handles try catches for us
-const jwt = require('jsonwebtoken')
 
-const getTokenFromRequest = (request) => {
-  const auth = request.get('authorization')
-  if (auth && auth.toLowerCase().startsWith('bearer'))
-    return auth.substring(7)
 
-  return null
-}
+// All but GET methods require authentication
+blogRouter.use((request, response, next) => {
+  if (request.userId) return next()
+  if (request.method === 'GET') return next()
+
+  return response.status(401).json({
+    error: 'invalid or missing token' }
+  )
+})
 
 
 blogRouter.get('/', async (request, response) => {
@@ -21,20 +23,8 @@ blogRouter.get('/', async (request, response) => {
 })
 
 blogRouter.post('/', async (request, response) => {
-
   const body = request.body
-  const token = getTokenFromRequest(request)
-  if (!token)
-    return response.status(401).json({ error: 'token missing' })
-
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-
-  if (!token || !decodedToken.id)
-    return response.status(401).json({
-      error: 'token missing or invalid'
-    })
-
-  const userId = decodedToken.id
+  const userId = request.userId
   const user = await User.findById(userId)
 
   const newBlog = new Blog({
@@ -62,8 +52,25 @@ blogRouter.get('/:id', async (request, response) => {
 })
 
 blogRouter.delete('/:id', async (request, response) => {
-  await Blog.findByIdAndRemove(request.params.id)
-  response.status(204).end()
+  const userId = request.userId
+  const blog = await Blog.findById(request.params.id)
+  if (!blog) return response.status(404).json({
+    error: 'Blog has already been removed from the server'
+  })
+
+  // Informing user without permissions (/potential hacker)
+  // that blog with corresponding id exist might be bad design?
+  if (blog.user.toString() !== userId)
+    return response.status(401).json({
+      error: 'You dont have permission to modify that blog'
+    })
+
+  const result = await Blog
+    .findByIdAndRemove(request.params.id)
+
+  if (result) response.status(204).end()
+  else        response.status(500).json({ error: 'Deleting the blog failed' })
+
 })
 
 blogRouter.put('/:id', async (request, response) => {
