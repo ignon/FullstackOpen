@@ -67,8 +67,6 @@ describe('when there is initially one user at db', () => {
     expect(result.body.error).toMatch(/password must be at least.*characters long/i)
   })
 
-  []
-
   test('creating user without password fails', async () => {
     const usersAtStart = await helper.getUsersInDatabase()
 

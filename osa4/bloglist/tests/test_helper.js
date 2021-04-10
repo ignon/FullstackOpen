@@ -14,7 +14,10 @@ const getBlogsInDatabase = async () => {
 }
 
 const getUsersInDatabase = async () => {
-  const users = await User.find({})
+  const users = await User
+    .find({})
+    .populate('user', { username: 1, name: 1 })
+
   return users.map(user => user.toJSON())
 }
 

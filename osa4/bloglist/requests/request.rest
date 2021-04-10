@@ -1,0 +1,39 @@
+@base = http://localhost:3001/api
+
+@name = "Arttu Mäkinen"
+@password = "salasana"
+
+# @name login
+POST {{base}}/login/
+Content-Type: application/json
+
+{
+  "username": "arde",
+  "password": "konna"
+}
+
+###
+
+POST {{base}}/users/
+Content-Type: application/json
+
+{
+  "username": "arde",
+  "password": "password",
+  "name": "konna"
+}
+
+###
+
+POST {{base}}/blogs/
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "title": "aKakkaa lumell31dss3233sa43d232",
+  "author": "sdafdsadsafdsadsfdsa",
+  "likes": 666,
+  "url": "https://sieni.us"
+}
+
+###

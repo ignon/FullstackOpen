@@ -15,7 +15,7 @@ userRouter.post('/', async (request, response) => {
   const saltRounds = 10
   const passwordHash = await bcrypt.hash(body.password, saltRounds)
 
-  console.log('----------------- NEW USER --------------------\n', body)
+  // console.log('----------------- NEW USER --------------------\n', body)
 
   const user = new User({
     username: body.username,

@@ -5,14 +5,13 @@ const blogRouter = require('express').Router()
 
 
 // All but GET methods require authentication
-blogRouter.use((request, response, next) => {
-  if (request.userId) return next()
-  if (request.method === 'GET') return next()
+const requireAuth = (request, response, next) => {
+  if (request.token && request.userId) return next()
 
   return response.status(401).json({
-    error: 'invalid or missing token' }
-  )
-})
+    error: 'invalid or missing token'
+  })
+}
 
 
 blogRouter.get('/', async (request, response) => {
@@ -22,7 +21,7 @@ blogRouter.get('/', async (request, response) => {
   response.json(blogs.map(blog => blog.toJSON()))
 })
 
-blogRouter.post('/', async (request, response) => {
+blogRouter.post('/', requireAuth, async (request, response) => {
   const body = request.body
   const userId = request.userId
   const user = await User.findById(userId)
@@ -51,7 +50,7 @@ blogRouter.get('/:id', async (request, response) => {
   else      response.status(404).end()
 })
 
-blogRouter.delete('/:id', async (request, response) => {
+blogRouter.delete('/:id', requireAuth, async (request, response) => {
   const userId = request.userId
   const blog = await Blog.findById(request.params.id)
   if (!blog) return response.status(404).json({
@@ -70,12 +69,24 @@ blogRouter.delete('/:id', async (request, response) => {
 
   if (result) response.status(204).end()
   else        response.status(500).json({ error: 'Deleting the blog failed' })
-
 })
 
-blogRouter.put('/:id', async (request, response) => {
+blogRouter.put('/:id', requireAuth, async (request, response) => {
+  const userId = request.userId
   const blogId = request.params.id
+  const blog = await Blog.findById(blogId)
+
+  if (!blog) return response.status(404).json({
+    error: 'Blog doesnt exists'
+  })
+
+  if (blog.user.toString() !== userId)
+    return response.status(401).json({
+      error: 'You dont have permission to modify that blog'
+    })
+
   const blogData = request.body
+  blogData.user = userId
 
   const validationError = (new Blog(blogData)).validateSync()
   if (validationError) {

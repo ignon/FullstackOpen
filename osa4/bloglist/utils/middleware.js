@@ -4,7 +4,9 @@ const morgan = require('morgan')
 morgan.token('res_body', function (req, res) { return JSON.stringify(req.body) })
 
 const requestLogger = (request, response, next) => {
-  return morgan(':method :url :status - :res_body - :response-time ms')
+  return morgan(':method :url :status - :res_body - :response-time ms', {
+    skip: (req, res) => process.env.NODE_ENV === 'test'
+  })
 }
 
 const unknownEndpoint = (request, response) => {
@@ -39,12 +41,13 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
-const tokenExtractor = (request, response, next) => {
+const userExtractor = (request, response, next) => {
   const auth = request.get('authorization')
   if (auth && auth.toLowerCase().startsWith('bearer')) {
     const token = auth.substring(7)
     const decodedToken = jwt.verify(token, process.env.SECRET)
 
+    request.token = token
     request.userId = decodedToken.id
   }
 
@@ -55,5 +58,5 @@ module.exports = {
   requestLogger,
   errorHandler,
   unknownEndpoint,
-  tokenExtractor
+  userExtractor
 }
