@@ -1,4 +1,4 @@
-@base = http://localhost:3001/api
+@base = http://localhost:3003/api
 
 @name = "Arttu Mäkinen"
 @password = "salasana"
@@ -18,8 +18,8 @@ POST {{base}}/users/
 Content-Type: application/json
 
 {
-  "username": "arde",
-  "password": "password",
+  "username": "arde2",
+  "password": "konna",
   "name": "konna"
 }
 
