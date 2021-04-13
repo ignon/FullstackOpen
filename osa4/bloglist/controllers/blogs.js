@@ -76,14 +76,15 @@ blogRouter.put('/:id', requireAuth, async (request, response) => {
   const blogId = request.params.id
   const blog = await Blog.findById(blogId)
 
+
   if (!blog) return response.status(404).json({
     error: 'Blog doesnt exists'
   })
 
-  if (blog.user.toString() !== userId)
-    return response.status(401).json({
-      error: 'You dont have permission to modify that blog'
-    })
+  // if (blog.user.toString() !== userId)
+  //   return response.status(401).json({
+  //     error: 'You dont have permission to modify that blog'
+  //   })
 
   const blogData = request.body
   blogData.user = userId

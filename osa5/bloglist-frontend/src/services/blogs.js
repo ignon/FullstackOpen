@@ -13,19 +13,33 @@ const setToken = newToken => {
 }
 
 const getAll = () => {
-  const response = axios.get(baseUrl)
-  return response.then(response => response.data)
+  return axios
+    .get(baseUrl)
+    .then(response => response.data)
+    .catch(exception => {
+      return Promise.reject(exception.response.data)
+    })
 }
 
 const create = async (newObject) => {
-  const response = await axios.post(baseUrl, newObject, config)
-  console.log(response.data)
-  return response.data
+  return axios
+    .post(baseUrl, newObject, config)
+    .then(response => {
+      return response.data
+    })
+    .catch(exception => {
+      return Promise.reject(exception.response.data)
+    })
 }
 
 const update = async (id, newObject) => {
-  const response = await axios.put(id, newObject, config)
-  return response.data
+  console.log(id, newObject)
+  return axios
+    .put(`${baseUrl}/${id}`, newObject, config)
+    .then(response => response.data)
+    .catch(exception => {
+      return Promise.reject(exception.response.data)
+    })
 }
 
-export default { getAll, create, update, setToken }
+export default { getAll, create, update, setToken}
