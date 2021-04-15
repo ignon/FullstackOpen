@@ -1,32 +1,40 @@
 import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
-
-
-const Blog = ({blog, addLikeToBlog}) => {
+const Blog = ({
+  blog,
+  addLikeToBlog,
+  handleRemoveBlog,
+  isRemovable
+}) => {
   const [showAll, setShowAll] = useState(false)
 
+  // console.log('isRemovable: ', isRemovable)
   const addLike = (blog) => {
     addLikeToBlog(blog)
   }
 
   const basicInfo = () => {
     return (
-      <div>
-        {blog.title}
-        <button onClick={() => setShowAll(!showAll)}>{showAll ? 'hide' : 'view'}</button>
-      </div>  
+      <div className="basic_info">
+        {blog.title} by {blog.author}
+        <button onClick={() => setShowAll(!showAll)}>{showAll ? 'Hide' : 'View'}</button>
+      </div>
     )
   }
 
   const additionalInfo = () => {
     return (
-      <div>
-        {blog.author}
+      <div className="additional_info">
+        Author: {blog.author}
         <br />
-        {blog.likes}
+        Likes: {blog.likes}
         <button onClick={() => addLike(blog)}>Like</button>
         <br />
         <a href="{blog.url}">{blog.url}</a>
+        <br />
+        User: {(blog.user) ? blog.user.name : 'unknown'}
+        {(isRemovable) && <button onClick={() => handleRemoveBlog(blog)}>Remove</button>}
       </div>
     )
   }
@@ -39,11 +47,20 @@ const Blog = ({blog, addLikeToBlog}) => {
   }
 
   return (
-    <div style={blogStyle}>
+    <div className='blog' style={blogStyle}>
       {basicInfo()}
       {showAll && additionalInfo()}
     </div>
   )
 }
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  addLikeToBlog: PropTypes.func.isRequired,
+  handleRemoveBlog: PropTypes.func.isRequired,
+  isRemovable: PropTypes.bool.isRequired
+}
+
+Blog.displayName = 'Blog'
 
 export default Blog

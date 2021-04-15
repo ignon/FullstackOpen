@@ -1,8 +1,10 @@
-const Notification = ({notification}) => {
+import React from 'react'
+
+const Notification = ({ notification }) => {
   if (!notification) return null
   if (!notification.message) return null
 
-  const {message, isWarning=false} = notification
+  const { message, isWarning=false } = notification
 
   const successStyle = {
     color: 'green',
@@ -33,5 +35,7 @@ const Notification = ({notification}) => {
     </div>
   )
 }
+
+Notification.displayName = 'Notification'
 
 export default Notification

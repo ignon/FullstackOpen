@@ -19,17 +19,15 @@ const App = () => {
 
   const noteFormRef = useRef()
 
-  // const [loginViewVisible, setLoginViewVisible] = useState(false)
-
   const sortBlogs = (blogs) => {
-     blogs.sort((blog1, blog2) => blog2.likes - blog1.likes)
+    blogs.sort((blog1, blog2) => blog2.likes - blog1.likes)
   }
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
       sortBlogs(blogs)
       setBlogs( blogs )
-    })  
+    })
   }, [])
 
   useEffect(() => {
@@ -38,6 +36,7 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       blogService.setToken(user.token)
+      console.log(user)
     }
   }, [])
 
@@ -53,7 +52,7 @@ const App = () => {
     console.log('logging in with ', username, password)
 
     loginService
-      .login({username, password})
+      .login({ username, password })
       .then((response) => {
         const loggedUser = response
         if (!loggedUser)
@@ -71,20 +70,20 @@ const App = () => {
         showNotification(`Logged in as ${loggedUser.username}`)
       })
       .catch(response => {
-        showNotification(`Invalid username or password`, true)
+        showNotification('Invalid username or password', true)
       })
   }
 
 
   const showNotification = (message, isWarning=false) => {
-    setNotification({message, isWarning})
+    setNotification({ message, isWarning })
 
     setTimeout(() => {
       setNotification(null)
     }, 10000)
   }
 
-  
+
   const blogList = () => (
     <div>
       {blogs.map(blog =>
@@ -92,6 +91,8 @@ const App = () => {
           key={blog.id}
           blog={blog}
           addLikeToBlog={addLikeToBlog}
+          handleRemoveBlog={handleRemoveBlog}
+          isRemovable={(user && blog.user && user.id === blog.user.id) ? true : false} // idk why the ternary is required to avoid null!?
         />
       )}
     </div>
@@ -99,18 +100,17 @@ const App = () => {
 
   const blogView = () => (
     <div>
-      <h2>Blogs</h2>
       { blogList() }
     </div>
   )
-  
+
   const loginForm = () => (
     <Togglable buttonLabel='Login'>
       <LoginForm
         username={username}
         password={password}
-        handleUsernameChange={ ({target}) => setUsername(target.value) }
-        handlePasswordChange={ ({target}) => setPassword(target.value) }
+        handleUsernameChange={ ({ target }) => setUsername(target.value) }
+        handlePasswordChange={ ({ target }) => setPassword(target.value) }
         handleLogin={handleLogin}
       />
     </Togglable>
@@ -118,7 +118,7 @@ const App = () => {
 
   const createBlog = (newBlog) => {
     console.log('sending blog')
-  
+
     noteFormRef.current.toggleVisibility()
 
     blogService
@@ -127,7 +127,7 @@ const App = () => {
 
         setBlogs(blogs.concat(returnedBlog))
         showNotification(`a new blog "${returnedBlog.title}" by "${returnedBlog.author} added"`)
-      }) 
+      })
       .catch(response => {
         const error = response.error
         showNotification(`Sending the blog failed: ${error}`, true)
@@ -152,7 +152,24 @@ const App = () => {
         setBlogs(updatedBlogList)
       })
       .catch(exception => {
-        showNotification(`updating likes failed\n${exception.error}`, true)
+        showNotification(`updating likes failed: \n${exception.error}`, true)
+      })
+  }
+
+  const handleRemoveBlog = (blogToRemove) => {
+    if (!window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}?`))
+      return
+
+    blogService
+      .remove(blogToRemove.id)
+      .then(response => {
+        showNotification('Blog removed')
+        setBlogs(
+          blogs.filter(map => map.id !== blogToRemove.id)
+        )
+      })
+      .catch(response => {
+        showNotification(`Removing blog failed: ${response.error}`)
       })
   }
 
@@ -176,8 +193,11 @@ const App = () => {
   return (
     <div>
       <Notification notification={notification} />
+      <h1>Bloglist</h1>
       { (user === null) && loginForm() }
       { (user !== null) && logoutButton() }
+
+      <h2>Blogs</h2>
       { (user !== null) && blogForm() }
 
       {blogView()}
