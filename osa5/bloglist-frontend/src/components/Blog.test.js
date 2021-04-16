@@ -20,7 +20,6 @@ beforeEach(() => {
   }
 })
 
-
 test('renders content', () => {
   const component = render(<Blog
     blog={testBlog}
@@ -43,7 +42,6 @@ test('renders content', () => {
 
 
 test('clicking the remove button calls the event handler', () => {
-
   const removeMockHandler = jest.fn()
   const likeMockHandler = jest.fn()
   const viewMockHandler = jest.fn()
@@ -71,7 +69,7 @@ test('clicking the remove button calls the event handler', () => {
 
 
 
-test('blog renders title and author by default, but not like and authors', () => {
+test('blog renders title and author by default, but not additional info like and authors', () => {
   const component = render(<Blog
     blog={testBlog}
     addLikeToBlog={() => {}}
@@ -88,24 +86,12 @@ test('blog renders title and author by default, but not like and authors', () =>
   let additionalInfo = component.container.querySelector('.additional_info')
   expect(additionalInfo).toBe(null)
 
-  const viewButton = component.getByText('View')
-  fireEvent.click(viewButton)
-
-
   additionalInfo = component.container.querySelector('.additional_info')
-  expect(additionalInfo).toBeDefined()
-  expect(additionalInfo).toHaveStyle('display: block')
-
-  const link = additionalInfo.querySelector('a')
-  expect(link).toHaveTextContent('youtube.com')
-
-  const remove = component.getByText('Remove')
-  expect(remove).toBeDefined()
-
+  expect(additionalInfo).toBe(null)
 })
 
 
-test('blog renders likes and ', () => {
+test('blog renders likes and after View-button has been clicked', () => {
   const component = render(<Blog
     blog={testBlog}
     addLikeToBlog={() => {}}
@@ -135,5 +121,24 @@ test('blog renders likes and ', () => {
 
   const remove = component.getByText('Remove')
   expect(remove).toBeDefined()
+})
 
+test('clicking like button twice calls event handler twice', () => {
+  const likeMockHandler = jest.fn()
+
+  const component = render(<Blog
+    blog={testBlog}
+    addLikeToBlog={likeMockHandler}
+    handleRemoveBlog={() => {}}
+    isRemovable={true}
+  />)
+
+  const viewButton = component.getByText('View')
+  fireEvent.click(viewButton)
+
+  const likeButton = component.getByText('Like')
+  fireEvent.click(likeButton)
+  fireEvent.click(likeButton)
+
+  expect(likeMockHandler.mock.calls).toHaveLength(2)
 })

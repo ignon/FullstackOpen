@@ -4,29 +4,31 @@ import { prettyDOM } from '@testing-library/dom'
 import { render, fireEvent } from '@testing-library/react'
 import BlogForm from './blogForm.js'
 
-test('<BlogForm> updates parent state and calls createBlog', () => {
+test('<BlogForm> updates parent state and calls createBlog with correct values', () => {
   const createBlog = jest.fn()
 
   const component = render(
     <BlogForm createBlog={createBlog} />
   )
 
-  const titleInput = component.container.querySelector('.titleField')
+  const titleField = component.container.querySelector('.titleField')
+  const authorField = component.container.querySelector('.authorField')
+  const urlField = component.container.querySelector('.urlField')
+
   const blogForm = component.container.querySelector('form')
 
-  expect(titleInput).toBeDefined()
+  expect(titleField).toBeDefined()
   expect(blogForm).toBeDefined()
 
-  console.log('TITLE INPUT:')
-  prettyDOM(titleInput)
-  fireEvent.change(titleInput, {
-    target: { value: 'kantakampale' }
-  })
+  fireEvent.change(titleField, { target: { value: 'Lotr' } })
+  fireEvent.change(authorField, { target: { value: 'Tolkien' } })
+  fireEvent.change(urlField, { target: { value: 'tolkien.gov.org' } })
   fireEvent.submit(blogForm)
-  console.log(createBlog.mock.calls)
 
   expect(createBlog.mock.calls).toHaveLength(1)
-  expect(createBlog.mock.calls[0][0].title).toBe('kantakampale')
+  expect(createBlog.mock.calls[0][0]).toEqual({
+    title: 'Lotr',
+    author: 'Tolkien',
+    url: 'tolkien.gov.org'
+  })
 })
-
-
