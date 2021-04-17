@@ -13,7 +13,7 @@ beforeEach(async () => {
 
   const passwordHash = await bcrypt.hash('sekret', 10)
   const user = new User({
-    name: 'root user4',
+    name: 'root',
     username: 'root',
     passwordHash
   })

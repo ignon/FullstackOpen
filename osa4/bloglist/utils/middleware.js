@@ -41,30 +41,24 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
-const userExtractor = (request, response, next) => {
+const tokenExtractor = (request, response, next) => {
   const auth = request.get('authorization')
   if (auth && auth.toLowerCase().startsWith('bearer')) {
     const token = auth.substring(7)
     request.token = token
+  }
+  next()
+}
 
+const userExtractor = (request, response, next) => {
+  const token = request.token
+  if (token) {
     const decodedToken = jwt.verify(token, process.env.SECRET)
     request.userId = decodedToken.id
   }
 
   next()
 }
-
-const tokenExtractor = (request, response, next) => {
-  const token = request.token
-  if (!token) return
-
-  const decodedToken = jwt.verify(token, process.env.SECRET)
-  request.userId = decodedToken.id
-
-  next()
-}
-
-
 
 module.exports = {
   requestLogger,

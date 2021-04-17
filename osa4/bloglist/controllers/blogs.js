@@ -15,6 +15,7 @@ const requireAuth = (request, response, next) => {
 
 
 blogRouter.get('/', async (request, response) => {
+  console.log(request)
   const blogs = await Blog
     .find({})
     .populate('user', { username: 1, name: 1 })
