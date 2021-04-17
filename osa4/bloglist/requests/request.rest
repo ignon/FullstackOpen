@@ -37,3 +37,5 @@ Authorization: Bearer {{login.response.body.token}}
 }
 
 ###
+
+POST {{base}}/api/testing/reset
