@@ -16,9 +16,9 @@ const getAll = () => {
   return axios
     .get(baseUrl)
     .then(response => response.data)
-    .catch(exception => {
-      return Promise.reject(exception.response.data)
-    })
+    .catch(exception =>
+      Promise.reject((exception.response).data)
+    )
 }
 
 const create = (newObject) => {
@@ -28,6 +28,7 @@ const create = (newObject) => {
       return response.data
     })
     .catch(exception => {
+      console.log(exception)
       return Promise.reject(exception.response.data)
     })
 }

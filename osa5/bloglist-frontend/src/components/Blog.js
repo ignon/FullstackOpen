@@ -17,8 +17,8 @@ const Blog = ({
   const basicInfo = () => {
     return (
       <div className="basic_info">
-        {blog.title} by {blog.author}
-        <button onClick={() => setShowAll(!showAll)}>{showAll ? 'Hide' : 'View'}</button>
+        <div className='blogTitle'>{blog.title}</div> by {blog.author}
+        <button className='viewButton' onClick={() => setShowAll(!showAll)}>{showAll ? 'Hide' : 'View'}</button>
       </div>
     )
   }
@@ -28,13 +28,15 @@ const Blog = ({
       <div className="additional_info">
         Author: {blog.author}
         <br />
+        <div className="likes">
         Likes: {blog.likes}
-        <button onClick={() => addLike(blog)}>Like</button>
+        </div>
+        <button className='likeButton' onClick={() => addLike(blog)}>Like</button>
         <br />
         <a href="{blog.url}">{blog.url}</a>
         <br />
         User: {(blog.user) ? blog.user.name : 'unknown'}
-        {(isRemovable) && <button onClick={() => handleRemoveBlog(blog)}>Remove</button>}
+        {(isRemovable) && <button className="removeButton" onClick={() => handleRemoveBlog(blog)}>Remove</button>}
       </div>
     )
   }
