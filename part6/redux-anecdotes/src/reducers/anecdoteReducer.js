@@ -23,7 +23,6 @@ const reducer = (state = initialState, action) => {
   // console.log('state now: ', state)
   // console.log('action', JSON.stringify(action))
   // console.log('action data', action.data)
-  console.log(state)
   switch(action.type) {
     case 'ADD_LIKE':
       return state.map(anecdote =>
@@ -32,7 +31,8 @@ const reducer = (state = initialState, action) => {
           : {
             ...anecdote,
             votes: anecdote.votes + 1
-          }).sort((anec1, anec2) => anec2.votes - anec1.votes)
+          })
+          .sort((anec1, anec2) => anec2.votes - anec1.votes)
     case 'CREATE_ANECDOTE':
       const content = action.data.content
       return state.concat(asObject(content))
