@@ -20,8 +20,11 @@ describe('Bloglist', function() {
 
   it('login form is shown', function() {
     cy.get('#usernameField').should('not.be.visible')
+    cy.get('#passwordField').should('not.be.visible')
+
     cy.contains('Login').click()
     cy.get('#usernameField').should('be.visible')
+    cy.get('#passwordField').should('be.visible')
   })
 
   it('login fails with wrong password', function() {
@@ -34,7 +37,7 @@ describe('Bloglist', function() {
     cy.get('html').should('not.contain', `${user.name} logged in`)
   })
 
-  it('login forms exists and login is working', function() {
+  it('login is working', function() {
     cy.contains('Login').click()
     cy.get('#usernameField').type(user.username)
     cy.get('#passwordField').type(user.password)

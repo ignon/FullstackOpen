@@ -1,6 +1,5 @@
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
-import { prettyDOM } from '@testing-library/dom'
 import { render, fireEvent } from '@testing-library/react'
 import BlogForm from './blogForm.js'
 
@@ -11,9 +10,9 @@ test('<BlogForm> updates parent state and calls createBlog with correct values',
     <BlogForm createBlog={createBlog} />
   )
 
-  const titleField = component.container.querySelector('.titleField')
-  const authorField = component.container.querySelector('.authorField')
-  const urlField = component.container.querySelector('.urlField')
+  const titleField = component.container.querySelector('#titleField')
+  const authorField = component.container.querySelector('#authorField')
+  const urlField = component.container.querySelector('#urlField')
 
   const blogForm = component.container.querySelector('form')
 

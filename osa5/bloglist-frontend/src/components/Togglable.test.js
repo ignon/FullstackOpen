@@ -1,7 +1,5 @@
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
-import Blog from './Blog.js'
-import { prettyDOM } from '@testing-library/dom'
 import { render, fireEvent } from '@testing-library/react'
 import Togglable from './togglable.js'
 
@@ -34,5 +32,16 @@ describe('<Togglable>', () => {
 
     const div = component.container.querySelector('.togglableContent')
     expect(div).not.toHaveStyle('display: none')
+  })
+
+  test('toggled content can be closed', () => {
+    const button = component.container.querySelector('button')
+    fireEvent.click(button)
+
+    const closeButton = component.container.querySelector('button:nth-child(2)')
+    fireEvent.click(closeButton)
+
+    const div = component.container.querySelector('.togglableContent')
+    expect(div).toHaveStyle('display: none')
   })
 })

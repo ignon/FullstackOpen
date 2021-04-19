@@ -1,7 +1,6 @@
 import React from 'react'
 import '@testing-library/jest-dom/extend-expect'
 import Blog from './Blog.js'
-import { prettyDOM } from '@testing-library/dom'
 import { render, fireEvent } from '@testing-library/react'
 
 // CI=true npm test
@@ -44,7 +43,6 @@ test('renders content', () => {
 test('clicking the remove button calls the event handler', () => {
   const removeMockHandler = jest.fn()
   const likeMockHandler = jest.fn()
-  const viewMockHandler = jest.fn()
 
   const component = render(<Blog
     blog={testBlog}
