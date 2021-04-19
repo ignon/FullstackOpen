@@ -8,7 +8,7 @@ POST {{base}}/login/
 Content-Type: application/json
 
 {
-  "username": "arde",
+  "username": "arde2",
   "password": "konna"
 }
 
@@ -39,3 +39,7 @@ Authorization: Bearer {{login.response.body.token}}
 ###
 
 POST {{base}}/api/testing/reset
+
+###
+
+POST http://localhost:3003/api/testing/reset
