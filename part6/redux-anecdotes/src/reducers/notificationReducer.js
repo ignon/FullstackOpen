@@ -1,13 +1,13 @@
 // import store from '../store'
 
 const initialState = {
-  message: 'Initial state (:'
+  message: ''
 }
 
 const reducer = (state = initialState, action) => {
-  console.log('state now: ', state)
-  console.log('action', JSON.stringify(action))
-  console.log('action data', action.data)
+  // console.log('state now: ', state)
+  // console.log('action', JSON.stringify(action))
+  // console.log('action data', action.data)
 
   switch(action.type) {
     case 'SET_NOTIFICATION':
@@ -22,14 +22,23 @@ const reducer = (state = initialState, action) => {
   }
 }
 
-export const setNotification = (message) => ({
-  type: 'SET_NOTIFICATION',
-  data: { message }
-})
+export const setNotification = (message, seconds=5) => {
+  return async dispatch => {
+    dispatch({
+      type: 'SET_NOTIFICATION',
+      data: { message }
+    })
 
-export const resetNotification = () => ({
-  type: 'RESET_NOTIFICATION'
-})
+    setTimeout(() => {
+      dispatch({
+        type: 'RESET_NOTIFICATION'
+      })
+    }, seconds * 1000)
+  }
+}
+
+// export const resetNotification = () => ({
+// })
 
 // setTimeout(() => {
 //   store.dispatch(resetNotification())
