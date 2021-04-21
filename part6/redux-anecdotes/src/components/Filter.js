@@ -1,14 +1,12 @@
-import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from "react-redux"
-// import { voteAnecdote } from '../reducers/anecdoteReducer'
+import React from 'react'
+import { connect } from "react-redux"
 import { setFilterString } from '../reducers/filterReducer'
 
-const Filter = (event) => {
-  const dispatch = useDispatch()
+const Filter = (props) => {
 
   const handleChange = (event) => {
     const filter = event.target.value
-    dispatch(setFilterString(filter))
+    props.setFilterString(filter)
   }
 
   return (
@@ -19,9 +17,14 @@ const Filter = (event) => {
       <br />
     </div>
   )
-    // value={filter}
-    // onChange={handleNewFilter}
-
 }
 
-export default Filter
+const mapStateToProps = ({ filter }) => ({ filter })
+const mapDispatchToProps = { setFilterString }
+
+const ConnectedFilter = connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Filter)
+
+export default ConnectedFilter

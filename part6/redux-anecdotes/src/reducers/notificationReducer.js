@@ -1,7 +1,8 @@
 // import store from '../store'
 
 const initialState = {
-  message: ''
+  message: '',
+  timeoutHandle: null
 }
 
 const reducer = (state = initialState, action) => {
@@ -13,35 +14,36 @@ const reducer = (state = initialState, action) => {
     case 'SET_NOTIFICATION':
       return {
         ...state,
-        message: action.data.message
+        message: action.data.message,
+        handle: action.data.handle
       }
-    case 'RESET_NOTIFICATION':
-      return initialState
+
+    case 'RESET_TIMEOUT':
+      return {
+        ...state,
+        timeoutHandle: null
+      }
     default:
       return state
   }
 }
 
+let timeoutHandle = null
 export const setNotification = (message, seconds=5) => {
   return async dispatch => {
+    clearTimeout(timeoutHandle)
+
+    timeoutHandle = setTimeout(() => {
+      dispatch({
+        type: 'RESET_NOTIFICATION'
+      })
+    }, seconds * 1000)
     dispatch({
       type: 'SET_NOTIFICATION',
       data: { message }
     })
 
-    setTimeout(() => {
-      dispatch({
-        type: 'RESET_NOTIFICATION'
-      })
-    }, seconds * 1000)
   }
 }
-
-// export const resetNotification = () => ({
-// })
-
-// setTimeout(() => {
-//   store.dispatch(resetNotification())
-// }, 5000)
 
 export default reducer
