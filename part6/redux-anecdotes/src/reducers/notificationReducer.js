@@ -1,8 +1,7 @@
 // import store from '../store'
 
 const initialState = {
-  message: '',
-  timeoutHandle: null
+  message: ''
 }
 
 const reducer = (state = initialState, action) => {
@@ -18,11 +17,8 @@ const reducer = (state = initialState, action) => {
         handle: action.data.handle
       }
 
-    case 'RESET_TIMEOUT':
-      return {
-        ...state,
-        timeoutHandle: null
-      }
+    case 'RESET_NOTIFICATION':
+      return initialState
     default:
       return state
   }
