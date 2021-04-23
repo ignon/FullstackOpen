@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import {
-  Switch, Route, Link, useParams, useRouteMatch, useHistory
+  Switch, Route, Link, useRouteMatch, useHistory
 } from 'react-router-dom'
 import Notification from './components/Notification'
 import { useField } from './hooks/index'

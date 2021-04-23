@@ -1,0 +1,6 @@
+PUT http://localhost:3001/api/blogs/606f0a11bf04374f5aef9fd7
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFyZHVoIiwiaWQiOiI2MDcwYWFhNTY4MWViODgzOGI0YzY3MjYiLCJpYXQiOjE2MTc5OTgxNjEsImV4cCI6MTYxODAwMTc2MX0.FXZeMz5KoQnSoYJSJAJWWIMVZFEDsRXj9ayz1OvPc6o
+
+{
+  "author": "konna"
+}
