@@ -26,7 +26,7 @@ const reducer = (state = [], action) => {
   }
 }
 
-export const initalizeAnecdotes = (anecdotes) => {
+export const initalizeAnecdotes = () => {
   return async dispatch => {
     const anecdotes = await anecdoteService.getAll()
     dispatch({

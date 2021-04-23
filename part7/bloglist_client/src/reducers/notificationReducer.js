@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 const initialState = {
   message: 'init',
   isWarning: false
@@ -25,7 +24,7 @@ const reducer = (state = initialState, action) => {
 
 let timeoutHandle = null
 export const showNotification = (message, isWarning=false,  seconds=5) => {
-  return async (dispatch) => {
+  return (dispatch) => {
     clearTimeout(timeoutHandle)
 
     timeoutHandle = setTimeout(() => {

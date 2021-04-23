@@ -3,9 +3,13 @@ import { composeWithDevTools } from 'redux-devtools-extension'
 import { applyMiddleware, combineReducers, createStore } from 'redux'
 
 import notificationReducer from './reducers/notificationReducer'
+import blogReducer from './reducers/blogReducer'
+import loginReducer from './reducers/loginReducer'
 
 const reducer = combineReducers({
-  notification: notificationReducer
+  notification: notificationReducer,
+  blogs: blogReducer,
+  user: loginReducer
 })
 
 const store = createStore(

@@ -22,6 +22,7 @@ blogRouter.get('/', async (request, response) => {
 })
 
 blogRouter.post('/', requireAuth, async (request, response) => {
+  console.log('post')
   const body = request.body
   const userId = request.userId
   const user = await User.findById(userId)
@@ -35,6 +36,7 @@ blogRouter.post('/', requireAuth, async (request, response) => {
   })
 
   const savedBlog = await newBlog.save()
+  await savedBlog.populate('user', { username: 1, password: 1 }).execPopulate() // there must be a way to to this without an additional query
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
 

@@ -1,29 +1,32 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { addBlog } from '../reducers/blogReducer'
 
-const BlogForm = ({ createBlog }) => {
+const BlogForm = ({ blogToggleRef }) => {
 
   const [author, setAuthor] = useState('')
   const [title,  setTitle] = useState('')
   const [url, setUrl] = useState('')
+  const dispatch = useDispatch()
 
-  const addBlog = (event) => {
+  const handleCreateBlog = (event) => {
+    blogToggleRef.current.toggleVisibility()
     event.preventDefault()
-
-    createBlog({
-      title,
-      author,
-      url
-    })
 
     setAuthor('')
     setTitle('')
     setUrl('')
+
+    dispatch(
+      addBlog({ title, author, url })
+    )
   }
+
   return (
     <div>
       <h2>Add a blog</h2>
-      <form onSubmit={addBlog}>
+      <form onSubmit={handleCreateBlog}>
         <div>
           Title
           <input
@@ -67,7 +70,7 @@ const BlogForm = ({ createBlog }) => {
 }
 
 BlogForm.propTypes = {
-  createBlog: PropTypes.func.isRequired
+  blogToggleRef: PropTypes.object.isRequired
 }
 
 
