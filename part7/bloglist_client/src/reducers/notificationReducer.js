@@ -24,7 +24,7 @@ const reducer = (state = initialState, action) => {
 }
 
 let timeoutHandle = null
-export const showNotification = (message, seconds=5, isWarning=false) => {
+export const showNotification = (message, isWarning=false,  seconds=5) => {
   return async (dispatch) => {
     clearTimeout(timeoutHandle)
 

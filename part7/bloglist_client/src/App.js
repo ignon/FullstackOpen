@@ -1,4 +1,3 @@
-/* eslint-disable no-throw-literal */
 import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
@@ -12,27 +11,22 @@ import { showNotification as setNotification } from './reducers/notificationRedu
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-
   const [user, setUser] = useState(null)
   const [password, setPassword] = useState('')
   const [username, setUsername] = useState('')
-  // const [notification] = useState({})
 
   const noteFormRef = useRef()
-
   const dispatch = useDispatch()
 
-  const showNotification = (message, isWarning=false) => {
-    console.log(message)
+  const showNotification = (message, isWarning=false, seconds=5) => {
     dispatch(
-      setNotification(message, 5, isWarning)
+      setNotification(message, seconds, isWarning)
     )
   }
 
   const sortBlogs = (blogs) => {
     blogs.sort((blog1, blog2) => blog2.likes - blog1.likes)
   }
-
 
   useEffect(() => {
     blogService.getAll().then(blogs => {
