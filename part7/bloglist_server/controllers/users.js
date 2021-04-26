@@ -32,7 +32,14 @@ userRouter.get('/', async (request, response) => {
     .find({})
     .populate('blogs', { user: 0 })
 
-  response.json(users.map(u => u.toJSON()))
+  const usersToReturn = users
+    .map(user => user.toJSON())
+    .map(user => ({
+      ...user,
+      blogsCreated: user.blogs.length
+    }))
+
+  response.json(usersToReturn)
 })
 
 module.exports = userRouter

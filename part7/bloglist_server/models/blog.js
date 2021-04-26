@@ -2,6 +2,14 @@ require('dotenv').config()
 const mongoose = require('mongoose')
 const uniqueValidator = require('mongoose-unique-validator')
 
+const commentSchema = mongoose.Schema({
+  text: {
+    type: String,
+    minlength: 3,
+    required: true
+  }
+})
+
 
 const blogSchema = mongoose.Schema({
   title: {
@@ -28,7 +36,8 @@ const blogSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
-  }
+  },
+  comments: [commentSchema]
 })
 
 
@@ -39,6 +48,11 @@ blogSchema.set('toJSON', {
     returnedObject.id = returnedObject._id.toString()
     delete returnedObject._id
     delete returnedObject.__v
+
+    for(const comment of returnedObject.comments) {
+      comment.id = comment._id.toString()
+      delete comment._id
+    }
   }
 })
 

@@ -1,5 +1,6 @@
+
 import axios from 'axios'
-const baseUrl = '/api/blogs'
+const baseUrl = '/api/users'
 
 let token = null
 
@@ -51,13 +52,4 @@ const remove = (id) => {
     )
 }
 
-const comment = (id, text) => {
-  return axios
-    .post(`${baseUrl}/${id}/comments`, text, config)
-    .then(response => response.data)
-    .catch(exception =>
-      Promise.reject(exception.response.data)
-    )
-}
-
-export default { getAll, create, update, setToken, remove, comment }
+export default { getAll, create, update, setToken, remove }

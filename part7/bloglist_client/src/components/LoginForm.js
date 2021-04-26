@@ -1,39 +1,19 @@
 import React, { useState }  from 'react'
-import PropTypes from 'prop-types'
 import { useDispatch } from 'react-redux'
 import { login } from '../reducers/loginReducer'
+import { useHistory } from 'react-router'
+import { useField } from '../utils/utils.js'
 
-const useField = (type) => {
-  const [value, setValue] = useState('')
-
-  const onChange = (event) => {
-    setValue(event.target.value)
-  }
-
-  const reset = () => {
-    setValue('')
-  }
-  const getFields = () => ({
-    type,
-    value,
-    onChange
-  })
-
-  return {
-    reset,
-    getFields,
-    value
-  }
-}
 const LoginForm = () => {
   const username = useField('text')
   const password = useField('text')
+  const history = useHistory()
   const dispatch = useDispatch()
 
   const handleLogin = (event) => {
     event.preventDefault()
     dispatch(login(username.value, password.value))
-    console.log(event)
+      .then(() => history.push('/'))
   }
 
   return (
@@ -60,10 +40,6 @@ const LoginForm = () => {
       </form>
     </div>
   )
-}
-
-LoginForm.propTypes = {
-  handleLogin: PropTypes.func.isRequired
 }
 
 LoginForm.displayName = 'LoginForm'

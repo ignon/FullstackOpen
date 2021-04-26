@@ -1,6 +1,6 @@
 const initialState = {
-  message: 'init',
-  isWarning: false
+  // message: 'init',
+  // isWarning: false
 }
 
 const reducer = (state = initialState, action) => {

@@ -20,7 +20,7 @@ const reducer = (state = null, action) => {
 
 export const login = (username, password) => {
   return (dispatch) => {
-    loginService
+    return loginService
       .login({ username, password })
       .then((loggedUser) => {
         if (!loggedUser)
@@ -39,11 +39,13 @@ export const login = (username, password) => {
         dispatch(
           showNotification(`Logged in as ${loggedUser.username}`)
         )
+        return loggedUser
       })
-      .catch(response => {
+      .catch(exception => {
         dispatch(
           showNotification('Invalid username or password', true)
         )
+        return Promise.reject(exception)
       })
   }
 }

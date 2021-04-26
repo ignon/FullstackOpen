@@ -1,68 +1,53 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
+import { likeBlog, removeBlog } from '../reducers/blogReducer'
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useHistory } from 'react-router-dom'
+import Comments from './Comments'
 
-const Blog = ({
-  blog,
-  addLikeToBlog,
-  handleRemoveBlog,
-  isRemovable
-}) => {
-  const [showAll, setShowAll] = useState(false)
 
-  // console.log('isRemovable: ', isRemovable)
-  const addLike = (blog) => {
-    addLikeToBlog(blog)
+const Blog = ({ blog }) => {
+  if (!blog) return (
+    <h2>{'Blog doesn\'t exist'}</h2>
+  )
+
+  const history = useHistory()
+  const dispatch = useDispatch()
+  const user = useSelector(state => state.user)
+  const isRemovable= Boolean(user && blog.user && user.id === blog.user.id)
+
+
+  const handleLike = (blogToLike) => {
+    dispatch( likeBlog(blogToLike) )
   }
 
-  const basicInfo = () => {
-    return (
-      <div className="basic_info">
-        <div className='blogTitle'>{blog.title}</div> by {blog.author}
-        <button className='viewButton' onClick={() => setShowAll(!showAll)}>{showAll ? 'Hide' : 'View'}</button>
-      </div>
-    )
+  const handleRemoveBlog = (blogToRemove) => {
+    if (!window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}?`))
+      return
+    dispatch(removeBlog(blogToRemove))
+      .then(() => history.push('/'))
   }
 
-  const additionalInfo = () => {
-    return (
+  return (
+    <div>
       <div className="additional_info">
+        <h1>{blog.title}</h1>
         Author: {blog.author}
         <br />
         <div className="likes">
         Likes: {blog.likes}
         </div>
-        <button className='likeButton' onClick={() => addLike(blog)}>Like</button>
+        <button className='likeButton' onClick={() => handleLike(blog)}>Like</button>
         <br />
-        <a href="{blog.url}">{blog.url}</a>
+        <a href={blog.url}>{blog.url}</a>
         <br />
-        User: {(blog.user) ? blog.user.name : 'unknown'}
+        User: <Link to={`/user/${blog.user.id}`}>{blog.user.name}</Link>
         {(isRemovable) && <button className="removeButton" onClick={() => handleRemoveBlog(blog)}>Remove</button>}
       </div>
-    )
-  }
-
-  const blogStyle = {
-    borderLeft: '2px solid black',
-    borderBottom: '2px solid lightgray',
-    paddingLeft: '10px',
-    margin: '9px'
-  }
-
-  return (
-    <div className='blog' style={blogStyle}>
-      {basicInfo()}
-      {showAll && additionalInfo()}
+      <div>
+        <Comments blog={ blog }/>
+      </div>
     </div>
   )
 }
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
-  addLikeToBlog: PropTypes.func.isRequired,
-  handleRemoveBlog: PropTypes.func.isRequired,
-  isRemovable: PropTypes.bool.isRequired
-}
-
-Blog.displayName = 'Blog'
 
 export default Blog

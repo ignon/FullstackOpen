@@ -21,6 +21,27 @@ blogRouter.get('/', async (request, response) => {
   response.json(blogs.map(blog => blog.toJSON()))
 })
 
+blogRouter.post('/:id/comments', requireAuth, async (request, response) => {
+  // const userId = request.userId
+  const blogToComment = await Blog
+    .findById(request.params.id)
+    .populate('user', { username: 1, name: 1 })
+
+  const blog = blogToComment.toJSON()
+  const comment = request.body
+  const comments = (blog.comments || [])
+
+  blog.comments = comments.concat(comment)
+
+  delete blog.id
+  blog.user = blog.user.id
+  console.log(2, blog)
+
+  const result = await Blog.findByIdAndUpdate(blogToComment.id, blog, { new: true })
+  if (result) response.status(200).json(result)
+  else        response.status(400).json({ error: `${blog.title} doesn't exist` })
+})
+
 blogRouter.post('/', requireAuth, async (request, response) => {
   console.log('post')
   const body = request.body
@@ -36,11 +57,17 @@ blogRouter.post('/', requireAuth, async (request, response) => {
   })
 
   const savedBlog = await newBlog.save()
-  await savedBlog.populate('user', { username: 1, password: 1 }).execPopulate() // there must be a way to to this without an additional query
+
   user.blogs = user.blogs.concat(savedBlog._id)
   await user.save()
 
-  response.json(savedBlog.toJSON())
+  const blogToReturn = savedBlog.toJSON()
+  const userObject = user.toJSON()
+  delete userObject.blogs
+
+  blogToReturn.user = userObject
+
+  response.json(blogToReturn)
 })
 
 blogRouter.get('/:id', async (request, response) => {
@@ -100,7 +127,7 @@ blogRouter.put('/:id', requireAuth, async (request, response) => {
 
   const result = await Blog.findByIdAndUpdate(blogId, blogData, { new: true })
   if (result) response.status(200).json(result)
-  else        response.status(400).json({ error: `${blogData.title} has already been removed from the server` })
+  else        response.status(400).json({ error: `${blogData.title} doesn't exist` })
 })
 
 

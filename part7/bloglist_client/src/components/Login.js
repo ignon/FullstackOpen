@@ -1,40 +1,26 @@
-import React, { useEffect } from 'react'
-import Togglable from './togglable'
-import LoginForm from './loginForm'
-import { login, logout, silentLogin } from '../reducers/loginReducer'
+import React from 'react'
+import { logout } from '../reducers/loginReducer'
 import { useDispatch, useSelector } from 'react-redux'
+import { useHistory } from 'react-router-dom'
 
 const Login = () => {
   const dispatch = useDispatch()
   const user = useSelector(state => state.user)
+  const history = useHistory()
 
-  useEffect(() => {
-    dispatch(silentLogin())
-  }, [])
-
-  const handleLogin = (username, password) =>
-    dispatch(login(username, password))
 
   const handleLogout = () =>
     dispatch(logout())
 
-  const logoutButton = () => (
-    <div>
-      <div>{user.name} logged in</div>
-      <button onClick={handleLogout}>Logout</button>
-    </div>
+  if (!user) return (
+    <button onClick={() => history.push('/login')}>Login</button>
   )
 
-  const loginForm = () => (
-    <Togglable buttonLabel='Login'>
-      <LoginForm handleLogin={handleLogin} />
-    </Togglable>
-  )
-
+  const style = { display: 'inline-block' }
   return (
-    <div>
-      { (user === null) && loginForm() }
-      { (user !== null) && logoutButton() }
+    <div style={style}>
+      <div style={style}>{user.name} logged in</div>
+      <button style={style} onClick={handleLogout}>Logout</button>
     </div>
   )
 }

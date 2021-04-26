@@ -1,5 +1,3 @@
-// import { dispatch } from 'rxjs/internal/observable/pairs'
-// import { dispatch } from 'rxjs/internal/observable/pairs'
 import blogService from '../services/blogs'
 import { showNotification } from './notificationReducer'
 
@@ -8,7 +6,7 @@ const sortByLikes = (blog1, blog2) => blog2.likes - blog1.likes
 const reducer = (state = [], action) => {
   switch(action.type) {
     case 'INIT_BLOGS': {
-      console.trace('INIT BLOGS')
+      // console.trace('INIT BLOGS')
       const blogs = action.data.sort(sortByLikes)
       return blogs
     }
@@ -78,9 +76,9 @@ export const addBlog = (blog) => {
 
 export const removeBlog = (blog) => {
   return (dispatch) => {
-    blogService
+    return blogService
       .remove(blog.id)
-      .then(() => {
+      .then(response => {
         dispatch({
           type: 'REMOVE_BLOG',
           data: blog
@@ -88,10 +86,32 @@ export const removeBlog = (blog) => {
         dispatch(
           showNotification('Blog removed')
         )
+        return response
       })
       .catch(exception => {
         dispatch(
           showNotification(`Removing blog failed: \n${exception.error}`, true)
+        )
+        return Promise.reject(exception)
+      })
+  }
+}
+
+export const comment = (blog, commentText) => {
+  return (dispatch) => {
+    return blogService
+      .comment(blog.id, {
+        text: commentText
+      })
+      .then(returnedBlog => {
+        dispatch({
+          type: 'REPLACE_BLOG',
+          data: returnedBlog
+        })
+      })
+      .catch(exception => {
+        dispatch(
+          showNotification(`Sending comment failed: ${exception.error}`)
         )
       })
   }

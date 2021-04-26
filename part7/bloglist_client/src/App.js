@@ -4,62 +4,78 @@ import Notification from './components/Notification'
 import Togglable from './components/togglable'
 import BlogForm from './components/blogForm'
 import { useDispatch, useSelector } from 'react-redux'
-import { initializeBlogs, likeBlog, removeBlog } from './reducers/blogReducer'
-import Login from './components/Login'
+import { initializeBlogs } from './reducers/blogReducer'
+import { silentLogin } from './reducers/loginReducer'
+import LoginForm from './components/LoginForm'
+import Users from './components/Users'
+import User from './components/User'
+import Menu from './components/Menu'
+import { getUsers } from './reducers/userReducer'
+import BlogList from './components/BlogList'
+import { Switch, Route, useRouteMatch } from 'react-router-dom'
 
-// import { login, logout, silentLogin } from './reducers/loginReducer'
 
 const App = () => {
   const blogToggleRef = useRef()
   const dispatch = useDispatch()
   const blogs = useSelector(state => state.blogs)
   const user = useSelector(state => state.user)
+  const users = useSelector(state => state.users)
 
   useEffect(() => {
+    dispatch(silentLogin())
     dispatch(initializeBlogs())
+    dispatch(getUsers())
   }, [])
 
-  const handleLike = (blogToLike) => {
-    dispatch( likeBlog(blogToLike) )
-  }
 
-  const handleRemoveBlog = (blogToRemove) => {
-    if (!window.confirm(`Remove blog ${blogToRemove.title} by ${blogToRemove.author}?`))
-      return
-    dispatch( removeBlog(blogToRemove) )
-  }
-
-  const blogList = () => (
-    <div>
-      {blogs.map(blog =>
-        <Blog
-          key={blog.id}
-          blog={blog}
-          addLikeToBlog={handleLike}
-          handleRemoveBlog={handleRemoveBlog}
-          isRemovable={(user && blog.user && user.id === blog.user.id) ? true : false} // idk why the ternary is required to avoid null!?
-        />
-      )}
-    </div>
+  const blogForm = () => (
+    <Togglable buttonLabel="New Blog" ref={blogToggleRef}>
+      <BlogForm blogToggleRef={blogToggleRef}/>
+    </Togglable>
   )
 
-  const blogForm = () => {
-    return (
-      <Togglable buttonLabel="New Blog" ref={blogToggleRef}>
-        <BlogForm blogToggleRef={blogToggleRef}/>
-      </Togglable>
-    )
-  }
+  const userMatch = useRouteMatch('/user/:id')
+  const userToLook = (userMatch)
+    ? users.find(user => user.id === userMatch.params.id)
+    : null
+
+  const blogMatch = useRouteMatch('/blog/:id')
+  const blogToLook = blogMatch
+    ? blogs.find(blog => blog.id === blogMatch.params.id)
+    : null
 
   return (
     <div>
-      <Notification />
+      <Menu />
       <h1>Bloglist</h1>
-      <Login />
-      <h2>Blogs</h2>
-      { (user !== null) && blogForm() }
+      <Notification />
 
-      {blogList()}
+      <Switch>
+        <Route path='/login'>
+          <LoginForm />
+        </Route>
+
+        <Route path='/users'>
+          <Users />
+        </Route>
+
+        <Route path='/user'>
+          <User user={userToLook} />
+        </Route>
+
+        <Route path='/blog'>
+          <Blog blog={blogToLook} />
+        </Route>
+
+        <Route path='/'>
+          <h2>Blogs</h2>
+          { (user !== null) && blogForm() }
+
+          <BlogList blogs={blogs} />
+        </Route>
+
+      </Switch>
     </div>
   )
 }

@@ -30,7 +30,7 @@ Content-Type: application/json
 Authorization: Bearer {{login.response.body.token}}
 
 {
-  "title": "aKakkaa lumell31dss3233sa43d232",
+  "title": "kommenttiblogi4",
   "author": "sdafdsadsafdsadsfdsa",
   "likes": 666,
   "url": "https://sieni.us"
@@ -42,4 +42,12 @@ POST {{base}}/api/testing/reset
 
 ###
 
-POST http://localhost:3003/api/testing/reset
+POST http://localhost:3003/api/blogs/608591d01687e51cc9636798/comments
+Content-Type: application/json
+Authorization: Bearer {{login.response.body.token}}
+
+{
+  "comment": "moi xD",
+  "this should not exist": true
+}
+
