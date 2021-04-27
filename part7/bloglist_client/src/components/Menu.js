@@ -1,23 +1,18 @@
 
 import React from 'react'
-import { Link } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import Login from './Login'
-const Menu = () => {
-  const menuStyle = {
-    paddingRight: 5,
-  }
+import { Menu } from 'semantic-ui-react'
 
-  const containerStyle = {
-    backgroundColor: 'lightgray'
-  }
 
+const MenuElement = () => {
   return (
-    <div style={containerStyle}>
-      <Link to='/' style={menuStyle}>Blogs</Link>
-      <Link to='/users' style={menuStyle}>Users</Link>
-      <Login style={containerStyle} />
-    </div>
+    <Menu>
+      <Menu.Item as={NavLink} exact to='/' activeClassName='active'>Blogs</Menu.Item>
+      <Menu.Item as={NavLink} to='/users' activeClassName='active'>Users</Menu.Item>
+      <Login />
+    </Menu>
   )
 }
 
-export default Menu
+export default MenuElement

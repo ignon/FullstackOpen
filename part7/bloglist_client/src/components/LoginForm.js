@@ -3,10 +3,11 @@ import { useDispatch } from 'react-redux'
 import { login } from '../reducers/loginReducer'
 import { useHistory } from 'react-router'
 import { useField } from '../utils/utils.js'
+import { Form, Input, Button } from 'semantic-ui-react'
 
 const LoginForm = () => {
   const username = useField('text')
-  const password = useField('text')
+  const password = useField('password')
   const history = useHistory()
   const dispatch = useDispatch()
 
@@ -19,25 +20,25 @@ const LoginForm = () => {
   return (
     <div>
       <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          Username
-          <input
+      <Form onSubmit={handleLogin}>
+        <Form.Field>
+          <label>Username</label>
+          <Input
             id="usernameField"
             name="Username"
             {...username.getFields()}
           />
-        </div>
-        <div>
-          Password
-          <input
+        </Form.Field>
+        <Form.Field>
+          <label>Password</label>
+          <Input
             id="passwordField"
             name="Password"
             {...password.getFields()}
           />
-        </div>
-        <button id="loginButton" type="submit">Login</button>
-      </form>
+        </Form.Field>
+        <Button id="loginButton" type="submit">Login</Button>
+      </Form>
     </div>
   )
 }

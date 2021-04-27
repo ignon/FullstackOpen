@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch } from 'react-redux'
 import { addBlog } from '../reducers/blogReducer'
+import { Button, Form } from 'semantic-ui-react'
 
 const BlogForm = ({ blogToggleRef }) => {
 
@@ -26,9 +27,9 @@ const BlogForm = ({ blogToggleRef }) => {
   return (
     <div>
       <h2>Add a blog</h2>
-      <form onSubmit={handleCreateBlog}>
-        <div>
-          Title
+      <Form onSubmit={handleCreateBlog}>
+        <Form.Field>
+          <label>Title</label>
           <input
             id="titleField"
             type="text"
@@ -38,9 +39,9 @@ const BlogForm = ({ blogToggleRef }) => {
               setTitle(target.value)
             }}
           />
-        </div>
-        <div>
-          Author
+        </Form.Field>
+        <Form.Field>
+          <label>Author</label>
           <input
             id="authorField"
             type="text"
@@ -50,9 +51,9 @@ const BlogForm = ({ blogToggleRef }) => {
               setAuthor(target.value)
             }}
           />
-        </div>
-        <div>
-          Url
+        </Form.Field>
+        <Form.Field>
+          <label>Url</label>
           <input
             id="urlField"
             type="text"
@@ -62,9 +63,9 @@ const BlogForm = ({ blogToggleRef }) => {
               setUrl(target.value)
             }}
           />
-        </div>
-        <button id="newBlogButton" type="submit">Add blog</button>
-      </form>
+        </Form.Field>
+        <Button primary id="newBlogButton" type="submit">Add blog</Button>
+      </Form>
     </div>
   )
 }

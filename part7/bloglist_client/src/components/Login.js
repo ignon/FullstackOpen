@@ -2,7 +2,10 @@ import React from 'react'
 import { logout } from '../reducers/loginReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
+import { Menu } from 'semantic-ui-react'
+import { NavLink } from 'react-router-dom'
 
+import { Link } from 'react-router-dom'
 const Login = () => {
   const dispatch = useDispatch()
   const user = useSelector(state => state.user)
@@ -12,16 +15,31 @@ const Login = () => {
   const handleLogout = () =>
     dispatch(logout())
 
-  if (!user) return (
-    <button onClick={() => history.push('/login')}>Login</button>
-  )
+  // if (!user) return (
+  // )
 
-  const style = { display: 'inline-block' }
+  // const style = { display: 'inline-block' }
   return (
-    <div style={style}>
-      <div style={style}>{user.name} logged in</div>
-      <button style={style} onClick={handleLogout}>Logout</button>
-    </div>
+    <Menu.Menu position='right'>
+      {(user) &&
+      <>
+        <Menu.Item
+          as={NavLink} to={`/user/${user.id}`}
+        >
+          {user.name} logged in
+        </Menu.Item>
+        <Menu.Item onClick={handleLogout}>Logout</Menu.Item>
+      </>
+      }
+      {(!user) &&
+        <Menu.Item
+          as={NavLink} to='/login'
+          activeClassName='active'
+        >
+        Login
+        </Menu.Item>
+      }
+    </Menu.Menu>
   )
 }
 

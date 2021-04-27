@@ -1,10 +1,9 @@
 const User = require('../models/user')
 const Blog = require('../models/blog')
+const { update } = require('../models/user')
 const blogRouter = require('express').Router()
-// app.js:n import 'express-async-errors' handles try catches for us
 
 
-// All but GET methods require authentication
 const requireAuth = (request, response, next) => {
   if (request.token && request.userId) return next()
 
@@ -35,7 +34,6 @@ blogRouter.post('/:id/comments', requireAuth, async (request, response) => {
 
   delete blog.id
   blog.user = blog.user.id
-  console.log(2, blog)
 
   const result = await Blog.findByIdAndUpdate(blogToComment.id, blog, { new: true })
   if (result) response.status(200).json(result)
@@ -43,7 +41,6 @@ blogRouter.post('/:id/comments', requireAuth, async (request, response) => {
 })
 
 blogRouter.post('/', requireAuth, async (request, response) => {
-  console.log('post')
   const body = request.body
   const userId = request.userId
   const user = await User.findById(userId)
@@ -103,31 +100,42 @@ blogRouter.delete('/:id', requireAuth, async (request, response) => {
 blogRouter.put('/:id', requireAuth, async (request, response) => {
   const userId = request.userId
   const blogId = request.params.id
-  const blog = await Blog.findById(blogId)
+  const blog = await Blog
+    .findById(blogId)
+    // .populate({ username: 1, name: 1 })
 
 
   if (!blog) return response.status(404).json({
     error: 'Blog doesnt exists'
   })
 
+  const originalBlog = blog.toJSON()
+
   // if (blog.user.toString() !== userId)
   //   return response.status(401).json({
   //     error: 'You dont have permission to modify that blog'
   //   })
 
-  const blogData = request.body
-  blogData.user = userId
+  const blogToUpdate = request.body
+  blogToUpdate.user = originalBlog.user
 
-  const validationError = (new Blog(blogData)).validateSync()
+  const validationError = (new Blog(blogToUpdate)).validateSync()
   if (validationError) {
     return response.status(400).json({
       error: validationError.message
     })
   }
 
-  const result = await Blog.findByIdAndUpdate(blogId, blogData, { new: true })
-  if (result) response.status(200).json(result)
-  else        response.status(400).json({ error: `${blogData.title} doesn't exist` })
+  const updatedBlog = await Blog
+    .findByIdAndUpdate(blogId, blogToUpdate, { new: true })
+    .populate('user', { username: 1, name: 1 })
+
+  if (updatedBlog) {
+    response.status(200).json(updatedBlog)
+  }
+  else {
+    response.status(400).json({ error: `${blogToUpdate.title} doesn't exist` })
+  }
 })
 
 
