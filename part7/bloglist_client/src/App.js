@@ -4,9 +4,9 @@ import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Switch, Route, useRouteMatch } from 'react-router-dom'
 import Blog from './components/Blog'
-import BlogForm from './components/blogForm'
+import BlogForm from './components/BlogForm'
 import BlogList from './components/BlogList'
-import Togglable from './components/togglable'
+import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import User from './components/User'
 import Users from './components/Users'
@@ -70,7 +70,6 @@ const App = () => {
           <Route path='/'>
             <h2>Blogs</h2>
             { (user !== null) && blogForm() }
-
             <BlogList blogs={blogs} />
           </Route>
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { addBlog } from '../reducers/blogReducer'
 import { Button, Form } from 'semantic-ui-react'
 
