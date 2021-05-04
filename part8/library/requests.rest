@@ -1,0 +1,17 @@
+POST http://localhost:4000/
+Content-Type: application/json
+
+{
+  "query": "query { allBooks{ title } }"
+}
+
+###
+
+
+POST http://localhost:4000/
+Content-Type: application/json
+
+{
+  "query": "mutation addBook($title: String!, $author: String!, $published: Int!, $genres: [String!]!, $name: String!) { addBook(title: $title, author: $author, published: $published, genres: $genres, name: $name ) { title author genres }",
+  "variables": {"title": "sdfg", "author": "sdfg", "published": 234, "genres": ["sadsddf"], "Name": "julkasija"}
+}
