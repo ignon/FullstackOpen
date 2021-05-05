@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
 import { ADD_BOOK, ALL_BOOKS, ALL_AUTHORS } from '../queries'
-import { useField } from '../utils/utils'
+import { useField, getNested } from '../utils/utils'
 import { useMutation } from '@apollo/client'
 
-const NewBook = (props) => {
+const NewBook = ({ show, updateCacheWith, setError }) => {
   const title = useField('text')
   const author = useField('text')
   const published = useField('number')
@@ -17,50 +17,21 @@ const NewBook = (props) => {
       { query: ALL_AUTHORS }
     ],
     onError: (error) => {
-      // I wasn't able to get the error message to appear in right place :|
-      try {
-        const errorMessage = error.networkError.result.errors[0].message
-        alert(errorMessage) //setError(...)
-      }
-      catch(e) {
-        console.log((e))
-        console.log(error)
-      }
+      // Missing required fields throw networkError INTERNAL_SERVER_ERROR instead of graphQLError: GRAPHQL_VALIDATION_ERROR
+      // thanks to a recent apollo bug:
+      // https://github.com/apollographql/apollo-server/issues/3498
+      let errorMessage =
+        getNested(error, ['networkError', 'result', 'errors', 0, 'message'])
+        ?? getNested(error, ['graphQLErrors', 0, 'message'])
+        ?? 'unknown error'
+      setError(errorMessage)
     },
     update: (store, response) => {
-      
-      const addedBook = response.data.addBook
-      const bookGenres = addedBook.genres
-
-      console.log('addedBook:', addedBook)
-      console.log('bookGenres:', bookGenres)
-
-      bookGenres.forEach(genre => {
-        const variables = { genre }
-        const dataInStore = store.readQuery({
-          query: ALL_BOOKS,
-          variables
-        })
-
-        if (!dataInStore) return
-
-        console.log('deleting cache for genre:', genre)
-        store.writeQuery({
-          query: ALL_BOOKS,
-          variables,
-          data: {
-            ...dataInStore,
-            allBooks: [...dataInStore.allBooks, response.data.addBook]
-          }
-        })
-      })
-      // console.log(dataInStore)
-      console.log('response: ', response)
-      console.log(store)
+      updateCacheWith(response.data.addBook)
     }
   })
 
-  if (!props.show) {
+  if (!show) {
     return null
   }
 

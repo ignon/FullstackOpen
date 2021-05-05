@@ -1,5 +1,9 @@
 import { useState } from 'react'
 
+export const getNested = (obj, path) => {
+  return path.reduce((xs, x) => (xs && xs[x]) ? xs[x] : null, obj)
+}
+
 export const useField = (type) => {
   const [value, setValue] = useState('')
 

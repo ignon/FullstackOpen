@@ -1,37 +1,50 @@
-import { useLazyQuery } from '@apollo/client'
+import { useApolloClient, useLazyQuery } from '@apollo/client'
 import React, { useEffect, useState } from 'react'
 import { ALL_BOOKS } from '../queries'
-// import { useQuery } from '@apollo/client'
+
+const getGenres = (client) => {
+  const dataInStore = client.readQuery({ query: ALL_BOOKS })
+  const { allBooks } = dataInStore
+  if (!allBooks) return []
+  const genres = []
+  allBooks.forEach(book => {
+    book.genres.forEach(genre => {
+       if (!genres.includes(genre)) genres.push(genre)
+    })
+  })
+
+  return genres
+}
 
 const Books = ({ show }) => {
+  const client = useApolloClient()
   const [getAllBooks, allBooks] = useLazyQuery(ALL_BOOKS, {
     fetchPolicy: 'cache-first'
   })
-  const [genre, setGenre] = useState('nosql')
+  const [genre, setGenre] = useState(null)
   
   useEffect(() => {
-    console.log(genre)
-    getAllBooks({ variables: {genre} })
+    const options = !genre
+      ? {} : { variables: {genre} }
+    getAllBooks(options)
   }, [genre]) //eslint-disable-line
 
   if (!show) {
     return null
   }
 
-  console.log(genre)
-  // console.log(allBooks)
-
   if (allBooks.loading) {
     return <div>Loading...</div>
   }
+
   if (allBooks.error) {
     return <div>{allBooks.error.message}</div>
   }
+
   if (!allBooks.data) {
     return <div>AllBooks data</div>
   }
-
-
+  const genres = getGenres(client)
 
   const books = allBooks.data.allBooks
   console.log(books)
@@ -48,21 +61,19 @@ const Books = ({ show }) => {
             <th>genres</th>
           </tr>
           {books.map(book =>
-            <tr key={book.title}>
+            <tr key={book.id}>
               <td>{book.title}</td>
               <td>{book.author.name}</td>
               <td>{book.published}</td>
-              <td>{(book.genres || []).join(', ')}</td>
+              {/* <td>{(book.genres || []).join(', ')}</td> */}
             </tr>
           )}
         </tbody>
       </table>
-
-      <button onClick={() => setGenre('nosql')}>nosql</button>
-      <button onClick={() => setGenre('database')}>database</button>
-      <button onClick={() => setGenre('McKoppa')}>McKoppa</button>
-      <br />
-      {genre}
+      
+      {genres.map(genre =>
+        <button key={genre} onClick={() => setGenre(genre)}>{genre}</button>
+      )}
     </div>
   )
 }

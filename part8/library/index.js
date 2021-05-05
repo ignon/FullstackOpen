@@ -7,9 +7,11 @@ const User = require('./models/User')
 const { ApolloServer, gql, UserInputError, AuthenticationError } = require('apollo-server')
 const { findByIdAndUpdate } = require('./models/Book')
 const mongoose = require('mongoose')
+const DataLoader = require('dataloader')
+const loaders = require('./loaders')
 
 const MONGODB_URI = ''
-const JWT_SECRET = ''
+const JWT_SECRET = 'elämä on laiffii'
 const jwt = require('jsonwebtoken')
 
 const typeDefs = require('./typeDefs')
@@ -31,10 +33,15 @@ const resolvers = {
     allAuthors: () => Author.find({}),
     findAuthor: (root, args) => Author.findOne({ name: args.name }),
     bookCount: () => Book.collection.countDocuments(),
-    allBooks: (root, args) => {
+    allBooks: async (root, args) => {
+      const { genre, author } = args
+
       const query = {}
-      if (args.genre) {
-        query.genres = { $in: [ args.genre ] }
+      if (genre) query.genres = { $in: [genre] }
+      
+      if (author) {
+        const authorObj = await Author.findOne({ name: author })
+        query.author = authorObj._id
       }
 
       return Book
@@ -46,7 +53,10 @@ const resolvers = {
   },
 
   Author: {
-    bookCount: async (root, args) => await Book.countDocuments({ author: root._id })
+    bookCount: async (book, args, context) => {
+      const { bookCount } = context.loaders
+      return await bookCount.load(book._id)
+    }
   },
 
   Mutation: {
@@ -115,7 +125,7 @@ const resolvers = {
     login: async (root, args) => {
       const user = await User.findOne({ username: args.username })
 
-      if (!user || args.password !== '123') {
+      if (!user || args.password !== 'secret') {
         throw new UserInputError('wrong credentials')
       }
 
@@ -134,13 +144,19 @@ const resolvers = {
   }
 }
 
+
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   context: async ({ req }) => {
+    const context = {
+      loaders: {
+        bookCount: new DataLoader(authorIDs => loaders.author.getBookCounts(authorIDs))
+      }
+    }
+
     const auth = req ? req.headers.authorization : null
 
-    console.log(auth)
     if (auth && auth.toLowerCase().startsWith('bearer')) {
       const decodedToken = jwt.verify(
         auth.substring(7), JWT_SECRET
@@ -149,9 +165,10 @@ const server = new ApolloServer({
       const currentUser = await User
         .findById(decodedToken.id).populate('friends')
       
-      return { currentUser }
+      context.currentUser = currentUser
     }
 
+    return context
   }
 })
 

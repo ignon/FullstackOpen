@@ -5,7 +5,7 @@ import { ALL_AUTHORS, UPDATE_BORN } from '../queries'
 import Select from 'react-select'
 
 
-const Authors = ({ show, result }) => {
+const Authors = ({ show, result, setError }) => {
   const [name, setName] = useState('')
   const born = useField('number')
 
@@ -15,7 +15,7 @@ const Authors = ({ show, result }) => {
     ],
     onError: (error) => {
       const gqlError = error.graphQLErrors[0]
-      alert(gqlError.message)
+      setError(gqlError.message)
     }
   })
   

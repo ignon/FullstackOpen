@@ -3,7 +3,7 @@ import { useApolloClient, useQuery, useSubscription } from '@apollo/client'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
-// import Notify from './components/Notify'
+import Notify from './components/Notify'
 import { ALL_BOOKS, ALL_AUTHORS, BOOK_ADDED } from './queries'
 import LoginForm from './components/LoginForm'
 
@@ -25,43 +25,38 @@ const App = () => {
     }, 10000)
   }
 
-  // const updateCacheWith = (addedBook) => {
-  //   (addedBook.genres || []).forEach(genre => {
-  //     const dataInStore = client.readQuery({ query: ALL_BOOKS })
-  //     const includedIn = (set, object) => set.map(obj => obj.id).includes(object)
-  //     if (!includedIn(dataInStore, addedBook)) {
-  //       client.writeQuery({
-  //         query: ALL_BOOKS,
-  //         variables: { genre },
-  //         data: {
-  //           allBooks: dataInStore.allBooks.concat(addedBook)
-  //         }
-  //       })
-  //     }
-  //   })
-  // }
+  const updateCacheWith = (addedBook) => {
+    const includedIn = (set, object) => set.map(obj => obj.id).includes(object.id)
+
+    let wasNewAddition = false
+    addedBook.genres.concat('all').forEach(genre => {
+      const variables = (genre === 'all') ? null : { genre }
+      const dataInStore = client.readQuery({ query: ALL_BOOKS, variables })
+      
+      if (dataInStore && !includedIn(dataInStore.allBooks, addedBook)) {
+        wasNewAddition = true
+        client.writeQuery({
+          query: ALL_BOOKS,
+          variables,
+          data: {
+            allBooks: dataInStore.allBooks.concat(addedBook)
+          }
+        })
+      }
+    })
+    return wasNewAddition
+  }
 
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
       console.log('SUBSCRIPTION:', subscriptionData)
+      const addedBook = subscriptionData.data.bookAdded
+      const wasNewAddition = updateCacheWith(addedBook)
+      if (wasNewAddition) {
+        alert(`${addedBook.title} added`)
+      }
     }
   })
-
-  // console.log(booksResult, authorsResult)
-  // console.log(page)
-
-  // if (!token) {
-  //   return (
-  //     <div>
-  //       <Notify errorMessage={errorMessage} />
-  //       <h2>Login</h2>
-  //       <LoginForm
-  //         setToken={setToken}
-  //         setError={notify}
-  //       />
-  //     </div>
-  //   )
-  // }
 
   const logout = () => {
     setToken(null)
@@ -73,6 +68,7 @@ const App = () => {
   return (
     <div>
       <div>
+        <Notify errorMessage={errorMessage}/>
         <button onClick={() => setPage('authors')}>authors</button>
         <button onClick={() => setPage('books')}>books</button>
         {(!token)
@@ -88,6 +84,7 @@ const App = () => {
       <Authors
         show={page === 'authors'}
         result={authorsResult}
+        setError={notify}
       />
 
       <Books
@@ -97,6 +94,8 @@ const App = () => {
 
       <NewBook
         show={page === 'add'}
+        updateCacheWith={updateCacheWith}
+        setError={notify}
       />
       <LoginForm
         show={page === 'login'}
@@ -104,7 +103,6 @@ const App = () => {
         setError={notify}
         setPage={setPage}
       />
-
     </div>
   )
 }
