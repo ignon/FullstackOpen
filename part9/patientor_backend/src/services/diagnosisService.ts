@@ -1,10 +1,10 @@
 import diagnoses from '../data/diagnoses';
-import { Diagnosis } from '../types';
+import { Diagnose } from '../types';
 
-// const diagnoses: Array<Diagnosis> = diagnoses as Array<Diagnosis>;
+// const diagnoses: Array<Diagnose> = diagnoses as Array<Diagnose>;
 // ^ type assertion should be done only when we are sure about data format
 
-const getEntries = (): Array<Diagnosis> => {
+const getEntries = (): Array<Diagnose> => {
   return diagnoses;
 };
 

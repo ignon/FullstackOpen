@@ -3,6 +3,7 @@ import axios from "axios";
 import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
 import { Button, Divider, Header, Container } from "semantic-ui-react";
 
+import { Patient } from './components/Patient';
 import { apiBaseUrl } from "./constants";
 import { useStateValue } from "./state";
 import { Patient } from "./types";
@@ -39,6 +40,9 @@ const App = () => {
           <Switch>
             <Route path="/">
               <PatientListPage />
+            </Route>
+            <Route path="/patient/:id">
+              <Patient />
             </Route>
           </Switch>
         </Container>
