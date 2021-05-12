@@ -2,12 +2,15 @@ POST http://localhost:3001/api/patients
 Content-Type: application/json
 
 {
-  "name": "Martin Riggs",
+  "name": "Otherr",
   "dateOfBirth": "1979-01-30",
   "ssn": "300179-77A",
-  "gender": "male",
+  "gender": "other",
   "occupation": "Cop"
 }  
    
    
-   
+###
+
+GET http://localhost:3001/api/patients/d2773598-f723-11e9-8f0b-362b9e155667
+Content-Type: application/json

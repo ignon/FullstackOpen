@@ -1,52 +1,75 @@
-import React from "react";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
+import React, { useEffect } from "react";
 import axios from "axios";
-import { BrowserRouter as Router, Route, Link, Switch } from "react-router-dom";
+import { Route, Link, Switch, useRouteMatch, useHistory } from "react-router-dom";
 import { Button, Divider, Header, Container } from "semantic-ui-react";
 
-import { Patient } from './components/Patient';
 import { apiBaseUrl } from "./constants";
 import { useStateValue } from "./state";
-import { Patient } from "./types";
+import { Diagnose, Patient } from "./types";
 
+import PatientPage from './PatientPage';
 import PatientListPage from "./PatientListPage";
+import { setPatientList, setDiagnoses } from "./state/reducer";
 
 const App = () => {
   const [, dispatch] = useStateValue();
-  React.useEffect(() => {
+  
+  useEffect(() => {
     void axios.get<void>(`${apiBaseUrl}/ping`);
-
+    
     const fetchPatientList = async () => {
       try {
         const { data: patientListFromApi } = await axios.get<Patient[]>(
           `${apiBaseUrl}/patients`
+          );
+          dispatch(setPatientList(patientListFromApi));
+        } catch (e) {
+          console.error(e);
+        }
+      };
+      void fetchPatientList();
+    }, [dispatch]);
+
+  useEffect(() => {
+    const fetchDiagnoses = async () => {
+      try {
+        const { data: diagnoses } = await axios.get<Diagnose[]>(
+          `${apiBaseUrl}/diagnoses`
         );
-        dispatch({ type: "SET_PATIENT_LIST", payload: patientListFromApi });
-      } catch (e) {
+        dispatch(setDiagnoses(diagnoses));
+      }
+      catch(e) {
         console.error(e);
       }
     };
-    void fetchPatientList();
+    void fetchDiagnoses();
   }, [dispatch]);
+    
+  type PatientMatch = { id?: string };
+  const match = useRouteMatch<PatientMatch>('/patients/:id');
+  const patientID = match ? match.params.id : null;
 
   return (
     <div className="App">
-      <Router>
         <Container>
           <Header as="h1">Patientor</Header>
           <Button as={Link} to="/" primary>
             Home
           </Button>
           <Divider hidden />
+
           <Switch>
-            <Route path="/">
+            <Route exact path="/">
               <PatientListPage />
             </Route>
-            <Route path="/patient/:id">
-              <Patient />
+            <Route path="/patients/:id">
+              <PatientPage patientID={patientID} />
             </Route>
           </Switch>
+
         </Container>
-      </Router>
     </div>
   );
 };

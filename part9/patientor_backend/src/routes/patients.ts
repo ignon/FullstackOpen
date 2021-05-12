@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express';
 import patientService from '../services/patientService';
+import { toNewPatientEntry } from '../utils';
 
-// interface PatientRequest extends Request {}
 
 const router = express.Router();
 
@@ -23,22 +23,20 @@ router.get('/:id', (request, response) => {
   }
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+router.post('/', (request: any, response) => {
+  console.log(request.body);
 
-router.post('/', (request, response) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { name, dateOfBirth, ssn, gender, occupation } = (<any>request);
-
-  const newPatientEntry = patientService.addPatient({
-    name,
-    dateOfBirth,
-    ssn,
-    gender,
-    occupation,
-    entries: []
-  });
+  try {
+    const newPatientEntry = toNewPatientEntry(request.body);
+    patientService.addPatient(newPatientEntry);
+    response.json(newPatientEntry);
+  }
+  catch(e) {
+    response.json({ error: e.message }).status(400);
+  }
 
 
-  response.json(newPatientEntry);
 
 });
 
