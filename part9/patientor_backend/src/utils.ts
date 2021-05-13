@@ -1,4 +1,14 @@
-import { NewPatientEntry, Gender } from './types';
+import {
+  NewPatientEntry,
+  Gender,
+  HealthCheckRating,
+  HealthCheckEntry,
+  Entry,
+  EntryType,
+  // HealthCheckEntry,
+  // HospitalEntry,
+  // OccupationalHealthcareEntry
+} from './types';
 
 
 const isString = (text: unknown): text is string => {
@@ -79,4 +89,132 @@ export const toNewPatientEntry = ({
   };
 
   return newEntry;
+};
+
+type EntryFields = {
+  type: unknown,
+  description: unknown,
+  date: unknown,
+  specialist: unknown,
+  diagnosisCodes: unknown,
+
+  healthCheckRating?: unknown,
+
+  discharge: {
+    date: unknown,
+    criteria: unknown,
+  },
+
+  employerName: unknown,
+  sickLeave: {
+    startDate: unknown,
+    endDate: unknown,
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isHealthCheckRating = (rating: any): rating is HealthCheckRating => {
+  return Object.values(HealthCheckRating).includes(rating);
+};
+
+const parseHealthCheckRating = (rating: unknown): HealthCheckRating => {
+  if (!rating || !isString(rating) || !isHealthCheckRating(rating)) {
+    throw new Error('Incorrect or missing healthCheckRating: ' + rating);
+  }
+  return rating;
+};
+
+const parseString = (text: unknown, fieldName: string) => {
+  if (typeof text !== 'string') {
+    throw new Error(`${fieldName} expected string, received ${text}`)
+  }
+
+  return text;
+};
+
+const isDiagnosisCodes = (codes: unknown): codes is string[] => {
+  const isNotString = (str: unknown) => !isString(str);
+
+  return Boolean(codes && Array.isArray(codes) && !codes.find(isNotString));
+};
+
+const parseDiagnosisCodes = (codes: unknown): string[] => {
+  if (!isDiagnosisCodes(codes)) {
+    throw new Error('Incorrect or missing field diagnosisCodes');
+  }
+
+  return codes;
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const isType = (type: any): type is EntryType => {
+  return Object.values(EntryType).includes(type);
+};
+  
+const parseType = (type: unknown): EntryType => {
+  if (!type || !isString(type) || !isType(type)) {
+    throw new Error(`Unknown type: ${type}`);
+  }
+  return type;
+};
+
+export const toNewEntry = ({
+  type,
+  description,
+  date,
+  specialist,
+  diagnosisCodes,
+
+  healthCheckRating,
+
+  discharge,
+  employerName,
+  sickLeave
+}: EntryFields): Entry => {
+
+    const basicFields = {
+      id: 'ksfdlads',
+      type: parseType(type),
+      description: parseString(description, 'description'),
+      date: parseDate(date),
+      specialist: parseString(specialist, 'specialist'),
+      diagnosisCodes: parseDiagnosisCodes(diagnosisCodes)
+    };
+
+    switch(type) {
+      case "HealthCheck":
+        return {
+          ...basicFields,
+          healthCheckRating: parseHealthCheckRating(healthCheckRating),
+        };
+
+      case "OccupationalHealthcare":
+        const { startDate, endDate } = sickLeave;
+        return {
+          ...basicFields,
+          employerName: parseString(employerName, 'employerName'),
+          sickLeave: {
+            startDate: parseDate(startDate),
+            endDate: parseDate(endDate)
+          }
+        };
+      case "Hospital":
+        const { date, criteria } = discharge;
+        return {
+          ...basicFields,
+          discharge: {
+            date: parseDate(date),
+            criteria: parseString(criteria, 'criteria')
+          }
+        };
+      default:
+        throw new Error(`Unknown type: ${type}`);
+    }
+};
+
+
+export const assertNever = ({ value }: { value: never }): never => {
+  throw new Error(
+    `Unhandled discriminated union member ${JSON.stringify(value)}`
+  );
 };

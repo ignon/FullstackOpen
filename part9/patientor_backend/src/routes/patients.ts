@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express';
+import patients from '../data/patients';
 import patientService from '../services/patientService';
-import { toNewPatientEntry } from '../utils';
+import { toNewEntry, toNewPatientEntry } from '../utils';
 
 
 const router = express.Router();
@@ -35,9 +36,23 @@ router.post('/', (request: any, response) => {
   catch(e) {
     response.json({ error: e.message }).status(400);
   }
+});
 
+router.post('/api/patients/:id/entries', (request, response) => {
+  const patientID = request.params.id;
+  const entry = request.body;
+  console.log(entry, patientID);
 
-
+  try {
+    const newValidatedEntry = toNewEntry(entry);
+    const updatedPatient = patientService.addEntry(patientID, newValidatedEntry);
+    response.json(updatedPatient);
+  }
+  catch(e) {
+    response.status(400).json({
+      error: "No patient with corresponding ID exists"
+    });
+  }
 });
 
 export default router;

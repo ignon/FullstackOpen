@@ -3,10 +3,12 @@ import axios from 'axios';
 import { Patient, Entry } from '../types';
 import { useStateValue } from '../state';
 import { apiBaseUrl } from "../constants";
-import { Icon } from 'semantic-ui-react';
+import { Icon, Rating } from 'semantic-ui-react';
 import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
 import { updateLocalPatientData } from '../state/reducer';
-
+import { assertNever } from '../utils';
+import { Card } from 'semantic-ui-react';
+// import HealthRatingBar from '../components/HealthRatingBar';
 
 type patientID = string | null | undefined;
 
@@ -78,41 +80,72 @@ const EntryField = ({ entry }: { entry: Entry }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { type, description, date, specialist, diagnosisCodes } = entry;
 
-  // switch(type) {
-  //   case "HealthCheck":
-  //     return <div></div>;
-  //   case "Hospital":
-  //     return <div></div>;
-  //   case "OccupationalHealthcare":
-  //     return <div></div>;
-  //   default:
-  //     ///// NEVER!!!
-  //     return null;
-  // }
+  const getEntryIcon = (type: Entry['type']) => {
+    switch(type) {
+      case "HealthCheck": return "user md";
+      case "Hospital": return "hospital";
+      case "OccupationalHealthcare": return "stethoscope";
+      default: assertNever(type);
+    }
+  };
+
+  const entryIconName = getEntryIcon(entry.type);
+  console.log(entryIconName);
 
   return (
-    <div>
-      {date} {description} <br />
-      <ul>
-        {diagnosisCodes?.map(code =>
-          <li key={code}>{code} {diagnoses[code]?.name}</li>
-        )}
-      </ul>
-    </div>
+    <Card>
+      <Card.Content>
+        <Card.Header>
+          {date}
+        <Icon name={entryIconName} />
+        </Card.Header>
+        <Card.Description>
+          {description}
+          <ul>
+            {diagnosisCodes?.map(code =>
+              <li key={code}>{code} {diagnoses[code]?.name}</li>
+            )}
+          </ul>
+          <EntryDetails entry={entry} />
+        </Card.Description>
+      </Card.Content>
+    </Card>
   );
 };
+// {<Rating icon="heart" disabled rating={4 - rating} maxRating={4} />}
 
 const EntryDetails = ({ entry }: { entry: Entry }) => {
-  const { type } = entry;
 
-  switch(type) {
+  switch(entry.type) {
     case "Hospital":
       const { discharge: { date, criteria }} = entry;
       return (
         <div>
-          Discharge: {discharge.date} {discharge.criteria}
+          Discharge: {date} {criteria}
         </div>
       );
+    case "HealthCheck":
+      const rating = entry.healthCheckRating + 1;
+      return (
+        <div>
+          <Rating icon="heart" disabled rating={rating} maxRating={rating} />
+        </div>
+      );
+    case "OccupationalHealthcare":
+      const { employerName, sickLeave } = entry;
+      if (!sickLeave) {
+        return <div>Employer: {employerName}</div>;
+      }
+      return (
+        <div>
+          Employer: {employerName}
+          <br />
+          SickLeave: {sickLeave.startDate} - {sickLeave.endDate}
+        </div>
+      );
+
+    default:
+      return assertNever(entry);
   }
 };
 export default PatientPage;
