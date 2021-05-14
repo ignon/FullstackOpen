@@ -2,12 +2,11 @@ import {
   NewPatientEntry,
   Gender,
   HealthCheckRating,
-  HealthCheckEntry,
-  Entry,
   EntryType,
-  // HealthCheckEntry,
-  // HospitalEntry,
-  // OccupationalHealthcareEntry
+  EntryTypeValues,
+  BaseEntry,
+  NewBaseEntry,
+  NewEntry
 } from './types';
 
 
@@ -128,14 +127,12 @@ const parseString = (text: unknown, fieldName: string) => {
   if (typeof text !== 'string') {
     throw new Error(`${fieldName} expected string, received ${text}`)
   }
-
   return text;
 };
 
 const isDiagnosisCodes = (codes: unknown): codes is string[] => {
   const isNotString = (str: unknown) => !isString(str);
-
-  return Boolean(codes && Array.isArray(codes) && !codes.find(isNotString));
+  return Boolean(codes && Array.isArray(codes) && codes.some(isNotString));
 };
 
 const parseDiagnosisCodes = (codes: unknown): string[] => {
@@ -148,7 +145,7 @@ const parseDiagnosisCodes = (codes: unknown): string[] => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const isType = (type: any): type is EntryType => {
-  return Object.values(EntryType).includes(type);
+  return Object.values(EntryTypeValues).includes(type);
 };
   
 const parseType = (type: unknown): EntryType => {
@@ -170,21 +167,20 @@ export const toNewEntry = ({
   discharge,
   employerName,
   sickLeave
-}: EntryFields): Entry => {
+}: EntryFields): NewEntry => {
 
-    const basicFields = {
-      id: 'ksfdlads',
-      type: parseType(type),
-      description: parseString(description, 'description'),
+    const basicFields: NewBaseEntry = {
       date: parseDate(date),
+      description: parseString(description, 'description'),
       specialist: parseString(specialist, 'specialist'),
       diagnosisCodes: parseDiagnosisCodes(diagnosisCodes)
     };
-
+    
     switch(type) {
       case "HealthCheck":
         return {
           ...basicFields,
+          type: "HealthCheck",
           healthCheckRating: parseHealthCheckRating(healthCheckRating),
         };
 
@@ -192,6 +188,7 @@ export const toNewEntry = ({
         const { startDate, endDate } = sickLeave;
         return {
           ...basicFields,
+          type: "OccupationalHealthcare",
           employerName: parseString(employerName, 'employerName'),
           sickLeave: {
             startDate: parseDate(startDate),
@@ -200,13 +197,21 @@ export const toNewEntry = ({
         };
       case "Hospital":
         const { date, criteria } = discharge;
-        return {
+        const entry = {
           ...basicFields,
-          discharge: {
-            date: parseDate(date),
-            criteria: parseString(criteria, 'criteria')
-          }
+          type: "Hospital",
+          // discharge: (discharge ? { date, criteria } : null)
         };
+        if (discharge) {
+          entry.discharge = {
+            date,
+            criteria
+          };
+        // }
+          // discharge: {
+          //   date: parseDate(date),
+          //   criteria: parseString(criteria, 'criteria')
+          // }
       default:
         throw new Error(`Unknown type: ${type}`);
     }

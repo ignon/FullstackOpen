@@ -26,13 +26,6 @@ export enum Gender {
   Other = 'other'
 }
 
-interface BaseEntry {
-  id: string;
-  description: string;
-  date: string;
-  specialist: string;
-  diagnosisCodes?: Array<Diagnose['code']>;
-}
 
 export enum HealthCheckRating {
   "Healthy" = 0,
@@ -40,26 +33,44 @@ export enum HealthCheckRating {
   "HighRisk" = 2,
   "CriticalRisk" = 3
 }
+// export const EntryTypeValues = {
+//   HealthCheck: "HealthCheck",
+//   Hospital: "Hospital",
+//   OccupationalHealthcare: "OccupationalHealthcare"
+// } as const;
 
-export enum EntryType {
+// export type EntryType = typeof EntryTypeValues[keyof typeof EntryTypeValues];
+
+enum EntryType {
   HealthCheck = "HealthCheck",
   Hospital = "Hospital",
   OccupationalHealthcare = "OccupationalHealthcare"
 }
 
+export interface BaseEntry {
+  id: string;
+  description: string;
+  date: string;
+  specialist: string;
+  diagnosisCodes?: Array<Diagnose['code']>;
+  type: EntryType
+}
+
+export type NewBaseEntry = Omit<BaseEntry, 'id'>;
+
 export interface HealthCheckEntry extends BaseEntry {
-  type: EntryType.HealthCheck;
+  type: EntryTypeValues.HealthCheck;
   healthCheckRating: HealthCheckRating;
 }
 interface HospitalEntry extends BaseEntry {
-  type: EntryType.Hospital;
+  type: "Hospital";
   discharge: {
     date: string;
     criteria: string;
   };
 }
 interface OccupationalHealthcareEntry extends BaseEntry {
-  type: EntryType.OccupationalHealthcare;
+  type: "OccupationalHealthcare";
   employerName: string;
   sickLeave?: {
     startDate: string;
@@ -71,3 +82,8 @@ export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
+
+// Define special omit for unions
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+
+export type NewEntry = UnionOmit<Entry, 'id'>;
