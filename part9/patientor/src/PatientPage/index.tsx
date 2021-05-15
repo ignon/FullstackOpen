@@ -3,18 +3,28 @@ import axios from 'axios';
 import { Patient, Entry } from '../types';
 import { useStateValue } from '../state';
 import { apiBaseUrl } from "../constants";
-import { Icon, Rating } from 'semantic-ui-react';
+import { Button, Icon, Rating } from 'semantic-ui-react';
 import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
 import { updateLocalPatientData } from '../state/reducer';
 import { assertNever } from '../utils';
 import { Card } from 'semantic-ui-react';
+import AddEntryModal from '../AddEntryModal';
+import { EntryFormValues } from '../AddEntryModal/AddEntryForm';
 // import HealthRatingBar from '../components/HealthRatingBar';
 
 type patientID = string | null | undefined;
 
 const PatientPage = ({ patientID }: { patientID: patientID | undefined }) => {
   const [{ patients }, dispatch] = useStateValue();
+  const [modalOpen, setModalOpen] = React.useState<boolean>(false);
+  const [error, setError] = React.useState<string | undefined>();
 
+  const openModal = (): void => setModalOpen(true);
+
+  const closeModal = (): void => {
+    setModalOpen(false);
+    setError(undefined);
+  };
   
   useEffect(() => {
     if (!patientID) return;
@@ -35,8 +45,22 @@ const PatientPage = ({ patientID }: { patientID: patientID | undefined }) => {
       };
     void fetchPatientList();
   }, [dispatch, patientID]);
-    
+
   if (!patientID) return <div>Undefined patient id.</div>;
+    
+  const submitNewEntry = async (values: EntryFormValues) => {
+    try {
+      const { data: newPatient } = await axios.post<Patient>(
+        `${apiBaseUrl}/patients/${patientID}/entries`,
+        values
+      );
+      dispatch(addPatient(newPatient));
+      closeModal();
+    } catch (e) {
+      console.error(e.response?.data || 'Unknown Error');
+      setError(e.response?.data?.error || 'Unknown error');
+    }
+  };
 
   const patient = patients[patientID];
   if (!patient) return null;
@@ -55,7 +79,6 @@ const PatientPage = ({ patientID }: { patientID: patientID | undefined }) => {
 
   const genderIconName = getGenderIcon(gender);
 
-
   return (
     <div>
       <h2>{name} <Icon name={genderIconName} /></h2>
@@ -70,6 +93,14 @@ const PatientPage = ({ patientID }: { patientID: patientID | undefined }) => {
           <EntryField key={entry.id} entry={entry} />
         )}
       </div>
+      <AddEntryModal
+        modalOpen={modalOpen}
+        onSubmit={() => null}
+        error={error}
+        onClose={closeModal}
+      />
+      <br />
+      <Button onClick={() => openModal()}>New entry</Button> 
     </div>
   );
 };
@@ -148,4 +179,8 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
       return assertNever(entry);
   }
 };
+
+
+
+
 export default PatientPage;
