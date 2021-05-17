@@ -33,49 +33,59 @@ export enum HealthCheckRating {
   "HighRisk" = 2,
   "CriticalRisk" = 3
 }
-// export const EntryTypeValues = {
-//   HealthCheck: "HealthCheck",
-//   Hospital: "Hospital",
-//   OccupationalHealthcare: "OccupationalHealthcare"
-// } as const;
 
-// export type EntryType = typeof EntryTypeValues[keyof typeof EntryTypeValues];
 
-enum EntryType {
-  HealthCheck = "HealthCheck",
-  Hospital = "Hospital",
-  OccupationalHealthcare = "OccupationalHealthcare"
-}
-
+// export enum {
+  //   HealthCheck = "HealthCheck",
+  //   Hospital = "Hospital",
+  //   OccupationalHealthcare = "OccupationalHealthcare"
+  // }
+  
 export interface BaseEntry {
   id: string;
+  type: EntryType;
   description: string;
   date: string;
   specialist: string;
   diagnosisCodes?: Array<Diagnose['code']>;
-  type: EntryType
 }
+
+export const EntryTypes = {
+  HealthCheck: "HealthCheck",
+  Hospital: "Hospital",
+  OccupationalHealthcare: "OccupationalHealthcare"
+} as const;
+
+export type EntryType = typeof EntryTypes[keyof typeof EntryTypes];
+
+// export const entryTypes = ["HealthCheck", "Hospital", "OccupationalHealthcare"] as const;
+// export type EntryType = typeof entryTypes[number];
 
 export type NewBaseEntry = Omit<BaseEntry, 'id'>;
 
 export interface HealthCheckEntry extends BaseEntry {
-  type: EntryTypeValues.HealthCheck;
+  type: "HealthCheck";
   healthCheckRating: HealthCheckRating;
 }
 interface HospitalEntry extends BaseEntry {
   type: "Hospital";
-  discharge: {
-    date: string;
-    criteria: string;
-  };
+  discharge: Discharge;
 }
+
+export interface Discharge {
+  date: string;
+  criteria: string;
+}
+
 interface OccupationalHealthcareEntry extends BaseEntry {
   type: "OccupationalHealthcare";
   employerName: string;
-  sickLeave?: {
-    startDate: string;
-    endDate: string;
-  }
+  sickLeave?: SickLeave;
+}
+
+export interface SickLeave {
+  startDate: string;
+  endDate: string;
 }
 
 export type Entry =

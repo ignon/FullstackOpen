@@ -1,7 +1,6 @@
 import patients from '../data/patients';
-import { Patient, PublicPatient, NewPatientEntry, Entry } from '../types';
+import { Patient, PublicPatient, NewPatientEntry, NewEntry } from '../types';
 import { v1 as uuid } from 'uuid';
-import { toNewEntry } from '../utils';
 
 const getEntries = (): Patient[] => {
   return patients;
@@ -29,14 +28,16 @@ const addPatient = (patientEntry: NewPatientEntry): Patient => {
   return newPatient;
 };
 
-const addEntry = (patientID: string, entry: Entry): Patient => {
+const addEntry = (patientID: string, newEntry: NewEntry): Patient => {
   const patient = patients.find(patient => patient.id === patientID);
 
   if (!patient) {
     throw new Error('No user with corresponding id exists');
   }
 
+  const entry = { ...newEntry, id: uuid() };
   patient.entries.push(entry);
+
   return patient;
 };
 // response.status(400).json({

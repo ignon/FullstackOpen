@@ -17,13 +17,34 @@ Content-Type: application/json
 
 ###
 
-POST http://localhost:3001/api/patients/d2773598-f723-11e9-8f0b-362b9e155667/entries
+POST http://localhost:3001/api/patients/d27736ec-f723-11e9-8f0b-362b9e155667/entries
 Content-Type: application/json
 
 {
-  "name": "Otherr",
-  "dateOfBirth": "1979-01-30",
-  "ssn": "300179-77A",
-  "gender": "other",
-  "occupation": "Cop"
+  "type": "HealthCheck",
+  "date": "2019-10-20",
+  "specialist": "Arde",
+  "description": "moimoi",
+  "diagnosisCodes": ["E33", "A3"],
+
+  "healthCheckRating": "Healthy"
+} 
+
+###
+
+POST http://localhost:3001/api/patients/d27736ec-f723-11e9-8f0b-362b9e155667/entries
+Content-Type: application/json
+
+{
+  "type": "HealthCheck",
+  "description": "moimoi",
+  "date": "2019-10-20",
+  "specialist": "Arde",
+  "diagnosisCodes": ["E3", "A6"],
+  "healthCheckRating": "Healthy"
+
+  # "discharge": {
+  #   "date": "2019-10-20",
+  #   "criteria": "mo"
+  # }
 } 

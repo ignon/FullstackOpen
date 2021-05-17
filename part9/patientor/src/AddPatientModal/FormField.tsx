@@ -1,7 +1,7 @@
 import React from "react";
 import { ErrorMessage, Field, FieldProps, FormikProps } from "formik";
 import { Dropdown, DropdownProps, Form } from "semantic-ui-react";
-import { Diagnosis, Gender } from "../types";
+import { Diagnosis, EntryTypes, EntryType, Gender } from "../types";
 
 // structure of a single option
 export type GenderOption = {
@@ -104,6 +104,49 @@ export const DiagnosisSelection = ({
         fluid
         multiple
         search
+        selection
+        options={stateOptions}
+        onChange={onChange}
+      />
+      <ErrorMessage name={field} />
+    </Form.Field>
+  );
+};
+
+
+
+export const EntryTypeSelection = ({
+  defaultValue,
+  setFieldValue,
+  setFieldTouched
+}: {
+  defaultValue: EntryType,
+  setFieldValue: FormikProps<{ types: string[] }>["setFieldValue"];
+  setFieldTouched: FormikProps<{ types: string[] }>["setFieldTouched"];
+}) => {
+  const field = "type";
+  const onChange = (
+    _event: React.SyntheticEvent<HTMLElement, Event>,
+    data: DropdownProps
+  ) => {
+    setFieldTouched(field, true);
+    setFieldValue(field, data.value);
+  };
+
+  console.log(defaultValue);
+
+  const stateOptions = Object.values(EntryTypes).map(entryType => ({
+    key: entryType,
+    text: entryType,
+    value: entryType,
+  }));
+
+  return (
+    <Form.Field>
+      <label>EntryTypes</label>
+      <Dropdown
+        fluid
+        value={defaultValue}
         selection
         options={stateOptions}
         onChange={onChange}

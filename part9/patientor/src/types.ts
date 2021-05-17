@@ -27,6 +27,7 @@ export interface Diagnose {
 }
 
 interface BaseEntry {
+  type: EntryType;
   id: string;
   description: string;
   date: string;
@@ -40,6 +41,14 @@ export enum HealthCheckRating {
   "HighRisk" = 2,
   "CriticalRisk" = 3
 }
+
+export const EntryTypes = {
+  HealthCheck: "HealthCheck",
+  Hospital: "Hospital",
+  OccupationalHealthcare: "OccupationalHealthcare"
+} as const;
+
+export type EntryType = typeof EntryTypes[keyof typeof EntryTypes];
 
 interface HealthCheckEntry extends BaseEntry {
   type: "HealthCheck";
@@ -65,3 +74,8 @@ export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
+
+// Define special omit for unions
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+
+export type EntryFormValues = UnionOmit<Entry, 'id'>;

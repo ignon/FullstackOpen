@@ -9,7 +9,7 @@ import { updateLocalPatientData } from '../state/reducer';
 import { assertNever } from '../utils';
 import { Card } from 'semantic-ui-react';
 import AddEntryModal from '../AddEntryModal';
-import { EntryFormValues } from '../AddEntryModal/AddEntryForm';
+import { EntryFormValues } from '../types';
 // import HealthRatingBar from '../components/HealthRatingBar';
 
 type patientID = string | null | undefined;
@@ -54,7 +54,7 @@ const PatientPage = ({ patientID }: { patientID: patientID | undefined }) => {
         `${apiBaseUrl}/patients/${patientID}/entries`,
         values
       );
-      dispatch(addPatient(newPatient));
+      dispatch(updateLocalPatientData(newPatient));
       closeModal();
     } catch (e) {
       console.error(e.response?.data || 'Unknown Error');
@@ -95,7 +95,7 @@ const PatientPage = ({ patientID }: { patientID: patientID | undefined }) => {
       </div>
       <AddEntryModal
         modalOpen={modalOpen}
-        onSubmit={() => null}
+        onSubmit={submitNewEntry}
         error={error}
         onClose={closeModal}
       />

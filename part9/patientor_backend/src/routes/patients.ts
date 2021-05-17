@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import express from 'express';
-import patients from '../data/patients';
 import patientService from '../services/patientService';
 import { toNewEntry, toNewPatientEntry } from '../utils';
 
@@ -38,7 +37,7 @@ router.post('/', (request: any, response) => {
   }
 });
 
-router.post('/api/patients/:id/entries', (request, response) => {
+router.post('/:id/entries', (request, response) => {
   const patientID = request.params.id;
   const entry = request.body;
   console.log(entry, patientID);
@@ -50,7 +49,8 @@ router.post('/api/patients/:id/entries', (request, response) => {
   }
   catch(e) {
     response.status(400).json({
-      error: "No patient with corresponding ID exists"
+      // error: "No patient with corresponding ID exists",
+      error: e.message
     });
   }
 });
