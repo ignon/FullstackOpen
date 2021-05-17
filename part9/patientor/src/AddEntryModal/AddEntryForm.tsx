@@ -8,7 +8,7 @@ import { TextField, NumberField, EntryTypeSelection, /*SelectField,*/ DiagnosisS
 import { useStateValue } from "../state/state";
 import {
   // HealthCheck,
-  EntryFormValues, HealthCheckRating, EntryTypes, EntryType
+  EntryFormValues, HealthCheckRating, EntryType
 } from '../types';
 
 
@@ -33,12 +33,14 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
     'entry type:',
     entryType
   );
+
+  const initialType = EntryTypes.Hospital as EntryType;
   
   console.log('DiagnosisList:', diagnosisList);
   return (
     <Formik
       initialValues={{
-        type: EntryTypes.Hospital as EntryType,
+        type: entryType,
         description: "",
         date: "",
         specialist: "",
@@ -57,7 +59,6 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
       onSubmit={onSubmit}
       validate={values => {
         console.log('validation: ', values);
-        // values.type = entryType;
 
         const requiredError = "Field is required";
         const errors: {
@@ -77,6 +78,7 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
             endDate: string
           }
         } = {};
+        values.type = entryType;
         if (!values.type) {
           errors.type = requiredError;
         }
@@ -105,7 +107,7 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
         console.log('type: ', values.type);
         errors.discharge = {};
 
-        switch(values.type as EntryType) {
+        switch(entryType) {
           case EntryTypes.Hospital:
             // alert('type hospital');
             if (!values.discharge?.date) {
