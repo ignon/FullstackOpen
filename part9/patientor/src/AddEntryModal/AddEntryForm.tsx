@@ -38,7 +38,7 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
   return (
     <Formik
       initialValues={{
-        type: EntryTypes.Hospital,
+        type: EntryTypes.Hospital as EntryType,
         description: "",
         date: "",
         specialist: "",
