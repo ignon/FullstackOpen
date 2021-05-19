@@ -27,7 +27,7 @@ Content-Type: application/json
   "description": "moimoi",
   "diagnosisCodes": ["E33", "A3"],
 
-  "healthCheckRating": "Healthy"
+  "healthCheckRating": 3
 } 
 
 ###

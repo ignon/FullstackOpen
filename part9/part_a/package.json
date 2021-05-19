@@ -8,8 +8,8 @@
     "dev": "ts-node-dev index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "ts-node": "ts-node",
-    "calculateBmi": "ts-node bmiCalculator.ts",
-    "calculateExercises": "ts-node exerciseCalculator.ts",
+    "calculateBmi": "ts-node cliCalculateBmi.ts",
+    "calculateExercises": "ts-node cliCalculateExercises.ts",
     "lint": "eslint --ext .ts ."
   },
   "author": "Arttu Mäkinen",

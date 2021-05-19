@@ -1,16 +1,15 @@
 import React, { useEffect } from 'react';
 import axios from 'axios';
-import { Patient, Entry } from '../types';
+import { Patient, Entry, EntryType } from '../types';
 import { useStateValue } from '../state';
 import { apiBaseUrl } from "../constants";
 import { Button, Icon, Rating } from 'semantic-ui-react';
 import { SemanticICONS } from 'semantic-ui-react/dist/commonjs/generic';
 import { updateLocalPatientData } from '../state/reducer';
-import { assertNever } from '../utils';
+import { assertNever, toNewEntry } from '../utils';
 import { Card } from 'semantic-ui-react';
 import AddEntryModal from '../AddEntryModal';
 import { EntryFormValues } from '../types';
-// import HealthRatingBar from '../components/HealthRatingBar';
 
 type patientID = string | null | undefined;
 
@@ -49,14 +48,19 @@ const PatientPage = ({ patientID }: { patientID: patientID | undefined }) => {
   if (!patientID) return <div>Undefined patient id.</div>;
     
   const submitNewEntry = async (values: EntryFormValues) => {
+
+    const newEntry = toNewEntry(values);
+    alert(JSON.stringify(newEntry, null, 4));
+
     try {
       const { data: newPatient } = await axios.post<Patient>(
         `${apiBaseUrl}/patients/${patientID}/entries`,
-        values
+        newEntry
       );
       dispatch(updateLocalPatientData(newPatient));
       closeModal();
-    } catch (e) {
+    }
+    catch (e) {
       console.error(e.response?.data || 'Unknown Error');
       setError(e.response?.data?.error || 'Unknown error');
     }
@@ -64,7 +68,6 @@ const PatientPage = ({ patientID }: { patientID: patientID | undefined }) => {
 
   const patient = patients[patientID];
   if (!patient) return null;
-  // return <pre>Patient view: {JSON.stringify(patient, null, 4)}</pre>;
 
   const { name, dateOfBirth, gender, occupation, ssn, entries } = patient;
 
@@ -111,11 +114,11 @@ const EntryField = ({ entry }: { entry: Entry }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { type, description, date, specialist, diagnosisCodes } = entry;
 
-  const getEntryIcon = (type: Entry['type']) => {
+  const getEntryIcon = (type: EntryType) => {
     switch(type) {
-      case "HealthCheck": return "user md";
-      case "Hospital": return "hospital";
-      case "OccupationalHealthcare": return "stethoscope";
+      case EntryType.HealthCheck: return "user md";
+      case EntryType.Hospital: return "hospital";
+      case EntryType.OccupationalHealthcare: return "stethoscope";
       default: assertNever(type);
     }
   };
@@ -143,26 +146,25 @@ const EntryField = ({ entry }: { entry: Entry }) => {
     </Card>
   );
 };
-// {<Rating icon="heart" disabled rating={4 - rating} maxRating={4} />}
 
 const EntryDetails = ({ entry }: { entry: Entry }) => {
 
   switch(entry.type) {
-    case "Hospital":
+    case EntryType.Hospital:
       const { discharge: { date, criteria }} = entry;
       return (
         <div>
           Discharge: {date} {criteria}
         </div>
       );
-    case "HealthCheck":
+    case EntryType.HealthCheck:
       const rating = entry.healthCheckRating + 1;
       return (
         <div>
           <Rating icon="heart" disabled rating={rating} maxRating={rating} />
         </div>
       );
-    case "OccupationalHealthcare":
+    case EntryType.OccupationalHealthcare:
       const { employerName, sickLeave } = entry;
       if (!sickLeave) {
         return <div>Employer: {employerName}</div>;
@@ -179,8 +181,5 @@ const EntryDetails = ({ entry }: { entry: Entry }) => {
       return assertNever(entry);
   }
 };
-
-
-
 
 export default PatientPage;

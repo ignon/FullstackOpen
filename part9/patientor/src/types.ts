@@ -26,6 +26,11 @@ export interface Diagnose {
   latin?: string; // Optional!!
 }
 
+export interface Discharge {
+  date: string;
+  criteria: string;
+}
+
 interface BaseEntry {
   type: EntryType;
   id: string;
@@ -80,3 +85,7 @@ export type Entry =
 type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
 
 export type EntryFormValues = UnionOmit<Entry, 'id'>;
+export type NewEntry = UnionOmit<Entry, 'id'>;
+export type NewBaseEntry = Omit<BaseEntry, 'id'>;
+
+export type NewPatientEntry = Omit<Patient, 'id'>;

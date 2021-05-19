@@ -2,9 +2,9 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 
 import express from 'express';
-import { calculateBmi } from './bmiCalculator';
-import { calculateExercises } from './exerciseCalculator';
-// import { Request, Response } from 'express';
+import calculateBmi from './calculateBmi';
+import calculateExercises from './calculateExercises';
+
 
 const app = express();
 app.use(express.json());
@@ -53,7 +53,7 @@ app.post('/exercises', (req, res) => {
   }
 });
 
-const PORT = 3003;
+const PORT = 3002;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

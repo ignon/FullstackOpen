@@ -12,13 +12,13 @@ export interface Patient {
 export type NewPatientEntry = Omit<Patient, 'id'>;
 
 export type PublicPatient = Omit<Patient, 'ssn' | 'entries'>;
-// export type PublicPatient = Omit<Patient, 'ssn' | 'entries' >;
 
 export interface Diagnose {
   code: string;
   name: string;
-  latin?: string; // Optional!!
+  latin?: string;
 }
+
 
 export enum Gender {
   Female = 'female',
@@ -35,12 +35,6 @@ export enum HealthCheckRating {
 }
 
 
-// export enum {
-  //   HealthCheck = "HealthCheck",
-  //   Hospital = "Hospital",
-  //   OccupationalHealthcare = "OccupationalHealthcare"
-  // }
-  
 export interface BaseEntry {
   id: string;
   type: EntryType;
@@ -50,16 +44,15 @@ export interface BaseEntry {
   diagnosisCodes?: Array<Diagnose['code']>;
 }
 
+
 export const EntryTypes = {
   HealthCheck: "HealthCheck",
   Hospital: "Hospital",
   OccupationalHealthcare: "OccupationalHealthcare"
 } as const;
 
-export type EntryType = typeof EntryTypes[keyof typeof EntryTypes];
 
-// export const entryTypes = ["HealthCheck", "Hospital", "OccupationalHealthcare"] as const;
-// export type EntryType = typeof entryTypes[number];
+export type EntryType = typeof EntryTypes[keyof typeof EntryTypes];
 
 export type NewBaseEntry = Omit<BaseEntry, 'id'>;
 
@@ -67,6 +60,7 @@ export interface HealthCheckEntry extends BaseEntry {
   type: "HealthCheck";
   healthCheckRating: HealthCheckRating;
 }
+
 interface HospitalEntry extends BaseEntry {
   type: "Hospital";
   discharge: Discharge;
@@ -92,6 +86,7 @@ export type Entry =
   | HospitalEntry
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
+
 
 // Define special omit for unions
 type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;

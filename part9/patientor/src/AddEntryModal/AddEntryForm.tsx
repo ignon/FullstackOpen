@@ -6,18 +6,9 @@ import { Field, Formik, Form } from "formik";
 
 import { TextField, NumberField, EntryTypeSelection, /*SelectField,*/ DiagnosisSelection } from "../AddPatientModal/FormField";
 import { useStateValue } from "../state/state";
-import {
-  // HealthCheck,
-  EntryFormValues, HealthCheckRating, EntryType
-} from '../types';
+import { isEntryType, isDate, isDiagnosisCodes, isDischarge, isString, isHealthCheckRating, isNonEmptyString, isSickLeave } from '../utils';
+import { EntryFormValues, HealthCheckRating, EntryType, Diagnosis } from '../types';
 
-
-
-console.log(EntryTypes);
-
-
-// import { Diagnosis } from "../types";
-// export type EntryFormValues = Omit<Entry, "id">;
 
 interface Props {
   onSubmit: (values: EntryFormValues) => void;
@@ -26,17 +17,9 @@ interface Props {
 
 export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
   const [{ diagnosisList }] = useStateValue();
-  const [entryType, setEntryType] = useState(EntryTypes.Hospital as EntryType);
+  const [entryType, setEntryType] = useState(EntryType.HealthCheck);
+  const [diagnosisCodes, setDiagnosisCodes] = useState([] as Diagnosis['code'][]);
 
-  console.log(
-    // 0, Object.values(HealthCheckRating)
-    'entry type:',
-    entryType
-  );
-
-  const initialType = EntryTypes.Hospital as EntryType;
-  
-  console.log('DiagnosisList:', diagnosisList);
   return (
     <Formik
       initialValues={{
@@ -45,7 +28,7 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
         date: "",
         specialist: "",
         diagnosisCodes: [],
-        healthCheckRating: 3,
+        healthCheckRating: 0,
         discharge: {
           date: "",
           criteria: ""
@@ -58,9 +41,16 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
       }}
       onSubmit={onSubmit}
       validate={values => {
-        console.log('validation: ', values);
+        // console.log('validation: ', values);
 
-        const requiredError = "Field is required";
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const getError = (value: any) => {
+          return (value)
+            ? "Field is invalid"
+            : "Field is missing";
+        };
+
+        const requiredError = "Field is missing or invalid";
         const errors: {
           type?: string,
           description?: string,
@@ -74,60 +64,75 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
           },
           employerName?: string,
           sickLeave?: {
-            startDate: string,
-            endDate: string
+            startDate?: string,
+            endDate?: string
           }
         } = {};
+
+
         values.type = entryType;
-        if (!values.type) {
-          errors.type = requiredError;
+        values.diagnosisCodes = diagnosisCodes;
+
+        const  { type, date } = values;
+        if (!isEntryType(type)) {
+          errors.type = getError(type);
         }
-        if (!values.description) {
+
+        if (!isNonEmptyString(values.description)) {
           errors.description = requiredError;
         }
-        if (!values.date) {
-          errors.date = requiredError;
+
+        if (!isDate(date)) {
+          errors.date = getError(date);
         }
-        if (!values.specialist) {
-          errors.specialist = requiredError;
+
+        if (!isNonEmptyString(values.specialist)) {
+          errors.specialist = getError(values.specialist);
         }
-        if (!values.diagnosisCodes) {
+
+        if (!isDiagnosisCodes(diagnosisCodes)) {
           errors.diagnosisCodes = requiredError;
         }
 
-        
-        // Ongelmat
-        // 1. Virheilmoitus
-        // 2. Errors['obj.value'] ...
-        // 3. Initial values with different types
-        
-        // 1. Tyyppi ei päivity
-        // 2. EntryTypeSelection-komponentti ei palauta arvoa?
-        // 3. Entäs muut selection componentit?
-        console.log('type: ', values.type);
-        errors.discharge = {};
-
         switch(entryType) {
-          case EntryTypes.Hospital:
-            // alert('type hospital');
-            if (!values.discharge?.date) {
-              console.log('discharge.date not defined');
-              errors.discharge.date = requiredError;
-            }
-            if (!values.discharge?.criteria) {
-              console.log('criteria not defined');
-              errors.discharge.criteria = requiredError;
+          case EntryType.Hospital:
+            if ("discharge" in values) {
+              if (!isDischarge(values.discharge)) {
+                const { date, criteria } = values.discharge;
+                errors.discharge = {
+                  date: !isDate(date) ? getError(date) : undefined,
+                  criteria: !isNonEmptyString(criteria) ? getError(criteria) : undefined
+                };
+              }
             }
             break;
-          case EntryTypes.OccupationalHealthcare:
+
+          case EntryType.HealthCheck:
+            if ("healthCheckRating" in values) {
+              if (!isHealthCheckRating(values.healthCheckRating))
+                errors.healthCheckRating = getError(values.healthCheckRating);
+            }
             break;
-          case EntryTypes.HealthCheck:
-            // if (!values.healthCheckRating) {
-            //   errors.healthCheckRating = requiredError;
-            // }
+          
+          case EntryType.OccupationalHealthcare:
+            if ("employerName" in values) {
+              if (!isNonEmptyString(values.employerName)) {
+                errors.employerName = requiredError;
+              }
+            }
+            if ("sickLeave" in values && values.sickLeave) {
+              if (!isSickLeave(values.sickLeave)) {
+                const { startDate, endDate } = values.sickLeave;
+                if (startDate || endDate) {
+                  errors.sickLeave = {
+                    startDate: !isDate(startDate) ? requiredError : undefined,
+                    endDate: !isDate(endDate) ? requiredError : undefined
+                  };
+                }
+              }
+            }
             break;
         }
-        console.log('errors: ', errors);
         return errors;
       }}
     >
@@ -161,18 +166,15 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
               name="specialist"
               component={TextField}
             />
-            {/* <Field
-              label="Diagnosis codes"
-              placeholder="M13 etc..."
-              name="diagnosisCodes"
-              component={TextField}
-            /> */}
             <DiagnosisSelection
               diagnoses={diagnosisList}
-              setFieldValue={() => null }
+              setFieldValue={(field, codes) => {
+                setDiagnosisCodes(codes);
+                console.log('diagnosisCodes', diagnosisCodes);
+              }}
               setFieldTouched={() => null }
             />
-            {(entryType === EntryTypes.HealthCheck &&
+            {(entryType === EntryType.HealthCheck &&
               <Field
                 label="healthCheckRating"
                 name="healthCheckRating"
@@ -181,7 +183,7 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
                 max={3}
               />
             )}
-            {(entryType === EntryTypes.OccupationalHealthcare) &&
+            {(entryType === EntryType.OccupationalHealthcare) &&
               <div>
                 <Field
                   label="Employer name"
@@ -203,7 +205,7 @@ export const AddEntryForm = ({ onSubmit, onCancel } : Props ) => {
                 />
               </div>
             }
-            {(entryType === EntryTypes.Hospital) &&
+            {(entryType === EntryType.Hospital) &&
               <div>
                 <Field
                   label="Discharge date"

@@ -12,7 +12,7 @@ const PORT = 3001;
 app.use('/api/diagnoses', diagnosesRouter);
 app.use('/api/patients', patientRouter);
 
-app.get('/ping', (_request, response) => {
+app.get('/api/ping', (_request, response) => {
   console.log('pong');
   response.send('pong');
 });

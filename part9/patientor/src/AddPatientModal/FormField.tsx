@@ -1,7 +1,7 @@
 import React from "react";
 import { ErrorMessage, Field, FieldProps, FormikProps } from "formik";
 import { Dropdown, DropdownProps, Form } from "semantic-ui-react";
-import { Diagnosis, EntryTypes, EntryType, Gender } from "../types";
+import { Diagnosis, EntryType, Gender } from "../types";
 
 // structure of a single option
 export type GenderOption = {
@@ -93,7 +93,7 @@ export const DiagnosisSelection = ({
 
   const stateOptions = diagnoses.map(diagnosis => ({
     key: diagnosis.code,
-    text: `${diagnosis.name} (${diagnosis.code})`,
+    text: `${diagnosis.code} (${diagnosis.name})`,
     value: diagnosis.code
   }));
 
@@ -135,7 +135,7 @@ export const EntryTypeSelection = ({
 
   console.log(defaultValue);
 
-  const stateOptions = Object.values(EntryTypes).map(entryType => ({
+  const stateOptions = Object.values(EntryType).map(entryType => ({
     key: entryType,
     text: entryType,
     value: entryType,
