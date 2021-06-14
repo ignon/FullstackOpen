@@ -43,5 +43,4 @@ describe('favorite blog', () => {
       likes: 5
     })
   })
-  
 })
